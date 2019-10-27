@@ -1,0 +1,26 @@
+{
+    "Endpoints": {
+            "GetTenantInfo": {
+                "url": "https://qa.apis.caidc.honeywell.com/api/tenants/devices/{deviceId}",
+                "method": "GET"
+            },
+        
+            "AssociateTenant": {
+                "url": "https://qa.apis.caidc.honeywell.com/api/tenants/{}devices/{deviceId}",
+                "method": "GET"
+            },            
+            "OnboardDeviceMobile": {
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
+                "method": "POST"
+            },
+            "OnboardingToken": { 
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
+                "method": "POST"
+            },                
+            "OnboardDeviceGateway": {
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/cloudgateway",
+                "method": "POST"
+            }
+        } ,
+        "ApiKey":"apikey=IUcT24epDTAEuhYbqRE1O4l1GIKw8rC6"
+}
