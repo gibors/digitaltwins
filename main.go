@@ -7,12 +7,14 @@ import (
 )
 
 func main() {
+	tenantID := "tenantid"
 
 	log.Println("Device simulation started.. ")
 
 	values := config.GetConfigValues()
 
-	completed, err := service.OnboardDeviceOnPremise(values, "CT60", "MyFirstDevice", "mobilecomputer")
+	completed, err := service.OnboardDeviceOnPremise(values, "CT60", "MyFirstDevice",
+		"mobilecomputer", tenantID)
 
 	if err != nil {
 		log.Fatal(err)

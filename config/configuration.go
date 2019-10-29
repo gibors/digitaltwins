@@ -12,6 +12,7 @@ type Configuration struct {
 }
 
 type Endpoints struct {
+	AuthAPI              Params `json: "AuthApi"`
 	GetTenantInfo        Params `json: "GetTenantInfo"`
 	AssociateTenant      Params `json: "AssociateTenant"`
 	OnboardDeviceMobile  Params `json: "OnboardDeviceMobile"`

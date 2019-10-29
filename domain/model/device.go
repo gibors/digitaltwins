@@ -21,6 +21,7 @@ type Device struct {
 	LastOnline           time.Time
 	LastUpdated          time.Time
 	CreatredOnDate       time.Time
+	PublicKey 			 string
 	ProvisionedUserEmail string
 	ActiveStatus         bool
 }

@@ -11,6 +11,9 @@ const LENGTH = 10
 const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 const UNDERSCORE = "_"
 
+//Todo: use devicekeygenerator utility
+const PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE48O1sNJV7b/1+B87FKsnW+GSDtR7wTyowA125Z21hUweejTpCtepY6mYHEMaHjhUENxhhDT9S60bcZCodI0Tlg=="
+
 // const MOBILECOMPUTER = "mobilecomputer"
 var seededRand *rand.Rand = rand.New(
 	rand.NewSource(time.Now().UnixNano()))
@@ -32,6 +35,7 @@ func CreateDevice(alias string, model string, deviceType string) device.Device {
 	b.WriteString(model)
 	b.WriteString(randID)
 	device.SerialNumber = b.String()
+	device.PublicKey = PUBLIC_KEY
 
 	return device
 }

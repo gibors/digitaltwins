@@ -1,12 +1,16 @@
 {
     "Endpoints": {
+            "AuthApi": { 
+                "url": "https://automation.apis.caidc.honeywell.com/api/auth",
+                "method": "POST"
+            }, 
             "GetTenantInfo": {
                 "url": "https://qa.apis.caidc.honeywell.com/api/tenants/devices/{deviceId}",
                 "method": "GET"
             },
         
             "AssociateTenant": {
-                "url": "https://qa.apis.caidc.honeywell.com/api/tenants/{}devices/{deviceId}",
+                "url": "https://qa.apis.caidc.honeywell.com/api/tenants/{tenantID}/devices/{deviceID}",
                 "method": "GET"
             },            
             "OnboardDeviceMobile": {
@@ -14,7 +18,7 @@
                 "method": "POST"
             },
             "OnboardingToken": { 
-                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/token",
                 "method": "POST"
             },                
             "OnboardDeviceGateway": {
