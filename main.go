@@ -2,6 +2,7 @@ package main
 
 import (
 	"caidc_auto_devicetwins/config"
+	device "caidc_auto_devicetwins/domain/model"
 	"caidc_auto_devicetwins/domain/service"
 	"log"
 )
@@ -14,7 +15,7 @@ func main() {
 	values := config.GetConfigValues()
 
 	completed, err := service.OnboardDeviceOnPremise(values, "CT60", "MyFirstDevice",
-		"mobilecomputer", tenantID)
+		device.MOBILECOMPUTER, tenantID)
 
 	if err != nil {
 		log.Fatal(err)

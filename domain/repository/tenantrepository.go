@@ -1,8 +1,7 @@
 package repository
 
 import (
-	"bytes"
-	device "caidc_auto_devicetwins/domain/model"
+	"caidc_auto_devicetwins/domain/utils"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -11,11 +10,11 @@ import (
 
 func (repo *Repository) AssociteDeviceToAtenant(device string, tenantId string) bool {
 
-	req, err := http.NewRequest("POST", repo.ConfigParams.EndPoints.AssociateTenant.URL,
-		bytes.NewBuffer(requestBody))
+	url := repo.ConfigParams.EndPoints.AssociateTenant.URL
+	method := repo.ConfigParams.EndPoints.AssociateTenant.Method
 
-	req.Header.Set("Authorization", "Bearer "+authToken)
-	req.Header.Set("Content-type", "application/json")
+	req := utils.GenerateRequest(nil, url, method, repo.GlobalToken, nil)
+
 	timeout := time.Duration(10 * time.Second)
 	client := http.Client{Timeout: timeout}
 
@@ -27,12 +26,43 @@ func (repo *Repository) AssociteDeviceToAtenant(device string, tenantId string) 
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		log.Fatalf("error associating device to tenant status code %d, due to %s",
+			resp.StatusCode, resp.Status)
+		return false
+	}
+
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
+	log.Println(result)
 	return true
 }
 
-func GetTenantInformation(deviceID string) device.Tenant {
-	tenant := device.Tenant{}
-	return tenant
+func (rep *Repository) GetTenantInformation(deviceID string) map[string]interface{} {
+
+	url := rep.ConfigParams.EndPoints.GetTenantInfo.URL
+	method := rep.ConfigParams.EndPoints.GetTenantInfo.Method
+
+	req := utils.GenerateRequest(nil, url, method, rep.GlobalToken, nil)
+
+	timeout := time.Duration(10 * time.Second)
+	client := http.Client{Timeout: timeout}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		log.Fatal("error getting tenant information")
+	}
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+
+	log.Println(result)
+
+	return result
 }

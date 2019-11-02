@@ -1,7 +1,7 @@
 {
     "Endpoints": {
             "AuthApi": { 
-                "url": "https://automation.apis.caidc.honeywell.com/api/auth",
+                "url": "https://qa.apis.caidc.honeywell.com/api/auth",
                 "method": "POST"
             }, 
             "GetTenantInfo": {
@@ -17,7 +17,7 @@
                 "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
                 "method": "POST"
             },
-            "OnboardingToken": { 
+            "OnboardingToken": {
                 "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/token",
                 "method": "POST"
             },                

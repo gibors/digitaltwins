@@ -21,12 +21,10 @@ type Device struct {
 	LastOnline           time.Time
 	LastUpdated          time.Time
 	CreatredOnDate       time.Time
-	PublicKey 			 string
+	PublicKey            string
 	ProvisionedUserEmail string
 	ActiveStatus         bool
 }
-
-type DeviceType string
 
 const (
 	GATEWAY        = "gateway"
@@ -37,7 +35,7 @@ const (
 
 type KeyPair struct {
 	PrivateKey string
-	PublicKey string
+	PublicKey  string
 }
 
 func (s Device) String() string {

@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-const LENGTH = 10
+const LENGTH = 6
 const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 const UNDERSCORE = "_"
 
 //Todo: use devicekeygenerator utility
-const PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE48O1sNJV7b/1+B87FKsnW+GSDtR7wTyowA125Z21hUweejTpCtepY6mYHEMaHjhUENxhhDT9S60bcZCodI0Tlg=="
+const PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEANeSK4az0LE8qOLpss7JF25IROpT2gSc7gtdmONYsEkf1Qe6NJChFmnx4az64WnpprraNUPS3rZZeM5nYxcmkA=="
 
 // const MOBILECOMPUTER = "mobilecomputer"
 var seededRand *rand.Rand = rand.New(
@@ -27,13 +27,14 @@ func CreateDevice(alias string, model string, deviceType string) device.Device {
 		Name:  alias}
 
 	var b bytes.Buffer
+	var serial = "MAUT" + randID
 	b.WriteString(model)
 	b.WriteString(UNDERSCORE)
-	b.WriteString(randID)
+	b.WriteString(serial)
 	device.SystemID = b.String()
 	b.Reset()
 	b.WriteString(model)
-	b.WriteString(randID)
+	b.WriteString(serial)
 	device.SerialNumber = b.String()
 	device.PublicKey = PUBLIC_KEY
 

@@ -6,7 +6,6 @@ import (
 	device "caidc_auto_devicetwins/domain/model"
 	"caidc_auto_devicetwins/domain/utils"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -14,46 +13,73 @@ import (
 
 type Repository struct {
 	ConfigParams config.Configuration
+	GlobalToken  string
 }
 
-func (r *Repository) OnboardDevice(device device.Device) bool {
-	tokenDetails := utils.GetTokenDetails()
-	tokenReq := make(map[string]interface{})
-	tokenReq["QRCodeHash"] = tokenDetails.TokenDetails.TokenHash
-	tokenReq["TokenId"] = tokenDetails.TokenDetails.TokenID
-	tokenReq["RegistrationDetails"] = map[string]interface{}{
-		"Ownershipcode": device.SerialNumber,
-		"PublicKey":     device.PublicKey,
-		"SystemId":      device.SystemID,
-	}
-	reqBody, err := json.Marshal(tokenReq)
-	if err != nil {
-		fmt.Println(err.Error())
-		return false
-	}
-	req, err := http.NewRequest("POST", r.ConfigParams.EndPoints.OnboardDeviceMobile.URL, bytes.NewBuffer(reqBody))
+func (r *Repository) OnboardDevice(dev device.Device) bool {
 
-	req.Header.Set("Authorization", "Bearer "+tokenDetails.TokenDetails.JWTToken)
-	req.Header.Set("Content-type", "application/json")
+	tokenDetails := utils.GetTokenDetails()
+
+	requestBody := map[string]interface{}{
+		"QRCodeHash": tokenDetails.TokenDetails.TokenHash,
+		"TokenId":    tokenDetails.TokenDetails.TokenID,
+		"RegistrationDetails": map[string]string{
+			"Ownershipcode": dev.SerialNumber,
+			"PublicKey":     dev.PublicKey,
+			"SystemId":      dev.SystemID,
+		},
+	}
+	reqBody, err := json.Marshal(requestBody)
+	if err != nil {
+		log.Fatal("Error on creating request body: ")
+		log.Fatal(err.Error())
+	}
+	var url string
+	method := r.ConfigParams.EndPoints.OnboardDeviceMobile.Method
+	if dev.Type == device.GATEWAY {
+		url = r.ConfigParams.EndPoints.OnboardDeviceGateway.URL
+	} else if dev.Type == device.MOBILECOMPUTER {
+		url = r.ConfigParams.EndPoints.OnboardDeviceMobile.URL
+	}
+
+	req := utils.GenerateRequest(nil, url, method, tokenDetails.TokenDetails.JWTToken, reqBody)
+
 	timeout := time.Duration(100 * time.Second)
 	client := http.Client{Timeout: timeout}
-	resp, err := client.Do(req)
+
+	log.Println("Request header : ")
+	log.Println(req.Header)
+	log.Println("Request body : ")
+	log.Println(req.Body)
+
+	response, err := client.Do(req)
 
 	if err != nil {
+		log.Fatalln("Error while onboarding device: ")
 		log.Fatalln(err)
 		return false
 	}
 
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
-
-	status := result["statusCode"].(string)
-	log.Println(result)
-	if status != string(16) {
+	if response.StatusCode != 200 {
+		log.Fatal("Error: ")
+		log.Fatal(response.StatusCode)
+		log.Fatal(response.Status)
 		return false
 	}
+
+	var result map[string]interface{}
+	json.NewDecoder(response.Body).Decode(&result)
+
+	status := result["statusCode"].(int)
+
+	log.Printf("result: %s", result)
+
+	if status != 16 {
+		return false
+	}
+
 	return true
 }
 
@@ -93,42 +119,4 @@ func GetOnboardingToken(conf config.Configuration) string {
 	log.Println(result)
 
 	return result["responseToken"].(string)
-}
-
-func GetAuthToken(url string) string {
-
-	requestBody, err := json.Marshal(map[string]string{
-		"grantType":   "authorization_code",
-		"accessToken": "vRAEiMGp0jmrcxpv",
-		"clientType":  "APIAPP",
-	})
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	timeout := time.Duration(10 * time.Second)
-	client := http.Client{Timeout: timeout}
-
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	req.Header.Set("apikey", "IUcT24epDTAEuhYbqRE1O4l1GIKw8rC6")
-	req.Header.Set("Content-type", "application/json")
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	resp, err := client.Do(req)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	defer resp.Body.Close()
-
-	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
-	log.Println(result)
-
-	return result["accessToken"].(string)
 }
