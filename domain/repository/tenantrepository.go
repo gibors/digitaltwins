@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -12,10 +13,11 @@ func (repo *Repository) AssociteDeviceToAtenant(device string, tenantId string) 
 
 	url := repo.ConfigParams.EndPoints.AssociateTenant.URL
 	method := repo.ConfigParams.EndPoints.AssociateTenant.Method
-
+	url = strings.Replace(url, "{tenantID}", tenantId, 1)
+	url = strings.Replace(url, "{deviceID}", device, 1)
 	req := utils.GenerateRequest(nil, url, method, repo.GlobalToken, nil)
 
-	timeout := time.Duration(10 * time.Second)
+	timeout := time.Duration(50 * time.Second)
 	client := http.Client{Timeout: timeout}
 
 	resp, err := client.Do(req)
@@ -42,7 +44,7 @@ func (rep *Repository) GetTenantInformation(deviceID string) map[string]interfac
 
 	url := rep.ConfigParams.EndPoints.GetTenantInfo.URL
 	method := rep.ConfigParams.EndPoints.GetTenantInfo.Method
-
+	url = strings.Replace(url, "{deviceID}", deviceID, 1)
 	req := utils.GenerateRequest(nil, url, method, rep.GlobalToken, nil)
 
 	timeout := time.Duration(10 * time.Second)

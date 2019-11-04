@@ -72,7 +72,7 @@ func (r *Repository) OnboardDevice(dev device.Device) bool {
 	var result map[string]interface{}
 	json.NewDecoder(response.Body).Decode(&result)
 
-	status := result["statusCode"].(int)
+	status := result["statusCode"].(float64)
 
 	log.Printf("result: %s", result)
 

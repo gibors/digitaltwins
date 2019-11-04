@@ -11,8 +11,8 @@ func OnboardDeviceOnPremise(conf config.Configuration, model string,
 
 	device := CreateDevice(alias, model, dtype)
 
-	signature := "MEQCIAb6DNjdsxDh+flzqXQpYIB5gQvwMEjcURmbB3lRIjzhAiAw7L+nOf2qnrR7+gZQR8HGx5o3qLKYFsqyTtN54TxKbw=="
-	deviceID := "CN80_17340D8241"
+	signature := "MEYCIQDeCdJt8qTLIlnQjSWRHokYb9OetmToD1HkZq48rcITGwIhANFXQzLzCzQp0x5GFH3BjjoM7bLf+tYF49PvN5ZWgCCk"
+	deviceID := "CT60_03VR2FVES7"
 
 	repo := repository.Repository{
 		ConfigParams: conf,
@@ -25,8 +25,8 @@ func OnboardDeviceOnPremise(conf config.Configuration, model string,
 
 	value := repo.OnboardDevice(device)
 
-	tenantInfo = repo.GetTenantInformation(device.SystemID)
-
+	tenantInfo := repo.GetTenantInformation(device.SystemID)
+	log.Println(tenantInfo)
 	log.Println(value)
 
 	return true, nil

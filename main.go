@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	tenantID := "tenantid"
+	tenantID := "5dbe56e6f5b7d751f8940a87"
 
 	log.Println("Device simulation started.. ")
 

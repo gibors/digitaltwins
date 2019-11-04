@@ -9,12 +9,14 @@ import (
 	"time"
 )
 
+const GDEVICEAPP = "GDEVICEAPP"
+
 func (r *Repository) GetGlobalToken(signature string, deviceID string) string {
 
 	requestBody, err := json.Marshal(map[string]string{
 		"grantType":   "authorization_code",
 		"accessToken": signature,
-		"clientType":  "DEVICEAPP",
+		"clientType":  GDEVICEAPP,
 	})
 	header := map[string]string{"x-device-serial": deviceID}
 
@@ -23,7 +25,7 @@ func (r *Repository) GetGlobalToken(signature string, deviceID string) string {
 	tokenEmpty := ""
 	request := utils.GenerateRequest(header, url, method, tokenEmpty, requestBody)
 
-	timeout := time.Duration(10 * time.Second)
+	timeout := time.Duration(30 * time.Second)
 	client := http.Client{Timeout: timeout}
 
 	resp, err := client.Do(request)
