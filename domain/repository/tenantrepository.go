@@ -1,7 +1,9 @@
 package repository
 
 import (
+	dev "caidc_auto_devicetwins/domain/model"
 	"caidc_auto_devicetwins/domain/utils"
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -18,8 +20,10 @@ func (repo *Repository) AssociteDeviceToAtenant(device string, tenantId string) 
 	req := utils.GenerateRequest(nil, url, method, repo.GlobalToken, nil)
 
 	timeout := time.Duration(50 * time.Second)
-	client := http.Client{Timeout: timeout}
-
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := http.Client{Timeout: timeout, Transport: tr}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalln(err)
@@ -40,7 +44,7 @@ func (repo *Repository) AssociteDeviceToAtenant(device string, tenantId string) 
 	return true
 }
 
-func (rep *Repository) GetTenantInformation(deviceID string) map[string]interface{} {
+func (rep *Repository) GetTenantInformation(deviceID string) dev.Tenant {
 
 	url := rep.ConfigParams.EndPoints.GetTenantInfo.URL
 	method := rep.ConfigParams.EndPoints.GetTenantInfo.Method
@@ -48,8 +52,10 @@ func (rep *Repository) GetTenantInformation(deviceID string) map[string]interfac
 	req := utils.GenerateRequest(nil, url, method, rep.GlobalToken, nil)
 
 	timeout := time.Duration(10 * time.Second)
-	client := http.Client{Timeout: timeout}
-
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := http.Client{Timeout: timeout, Transport: tr}
 	resp, err := client.Do(req)
 
 	if err != nil {
@@ -61,7 +67,8 @@ func (rep *Repository) GetTenantInformation(deviceID string) map[string]interfac
 	if resp.StatusCode != 200 {
 		log.Fatal("error getting tenant information")
 	}
-	var result map[string]interface{}
+
+	var result = dev.Tenant{}
 	json.NewDecoder(resp.Body).Decode(&result)
 
 	log.Println(result)

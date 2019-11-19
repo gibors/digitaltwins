@@ -5,6 +5,7 @@ import (
 	"caidc_auto_devicetwins/config"
 	device "caidc_auto_devicetwins/domain/model"
 	"caidc_auto_devicetwins/domain/utils"
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -14,6 +15,8 @@ import (
 type Repository struct {
 	ConfigParams config.Configuration
 	GlobalToken  string
+	TenantToken  string
+	QueueToken   string
 }
 
 func (r *Repository) OnboardDevice(dev device.Device) bool {
@@ -45,8 +48,10 @@ func (r *Repository) OnboardDevice(dev device.Device) bool {
 	req := utils.GenerateRequest(nil, url, method, tokenDetails.TokenDetails.JWTToken, reqBody)
 
 	timeout := time.Duration(100 * time.Second)
-	client := http.Client{Timeout: timeout}
-
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := http.Client{Timeout: timeout, Transport: tr}
 	log.Println("Request header : ")
 	log.Println(req.Header)
 	log.Println("Request body : ")

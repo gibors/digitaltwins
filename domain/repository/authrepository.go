@@ -3,6 +3,7 @@ package repository
 import (
 	"bytes"
 	"caidc_auto_devicetwins/domain/utils"
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -10,29 +11,53 @@ import (
 )
 
 const GDEVICEAPP = "GDEVICEAPP"
+const DEVICEAPP = "DEVICEAPP"
+const BROKERAPP = "BROKERAPP"
 
 func (r *Repository) GetGlobalToken(signature string, deviceID string) string {
+	return r.GetToken(GDEVICEAPP, signature, deviceID, nil)
+}
+
+func (r *Repository) GetTenantToken(signature string, deviceID string) string {
+	return r.GetToken(DEVICEAPP, signature, deviceID, nil)
+}
+
+func (r *Repository) GetQueueToken(queueEndpoint string) string {
+	empty := ""
+	var api *string
+	api = &queueEndpoint
+	return r.GetToken(BROKERAPP, r.TenantToken, empty, api)
+}
+
+func (r *Repository) GetToken(clientType string, accessToken string, deviceID string, urlAuth *string) string {
 
 	requestBody, err := json.Marshal(map[string]string{
 		"grantType":   "authorization_code",
-		"accessToken": signature,
-		"clientType":  GDEVICEAPP,
+		"accessToken": accessToken,
+		"clientType":  clientType,
 	})
 	header := map[string]string{"x-device-serial": deviceID}
-
-	url := r.ConfigParams.EndPoints.AuthAPI.URL
+	var url string
+	if urlAuth == nil {
+		url = r.ConfigParams.EndPoints.AuthAPI.URL
+	} else {
+		url = *urlAuth
+		header = nil // for rabbit we should not send headers
+	}
 	method := r.ConfigParams.EndPoints.AuthAPI.Method
 	tokenEmpty := ""
 	request := utils.GenerateRequest(header, url, method, tokenEmpty, requestBody)
 
-	timeout := time.Duration(30 * time.Second)
-	client := http.Client{Timeout: timeout}
+	timeout := time.Duration(60 * time.Second)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := http.Client{Timeout: timeout, Transport: tr}
 
 	resp, err := client.Do(request)
 
 	if err != nil {
-		log.Fatalln("Error while getting global token")
-		log.Fatalln(err)
+		log.Fatalf("Error while getting global token: %v", err)
 	}
 
 	defer resp.Body.Close()

@@ -1,0 +1,74 @@
+{
+    "CloudPlatformEvent": {
+      "CreatedTime": "0001-01-01T00:00:00+00:00",
+      "Id": "",
+      "CreatorId": "",
+      "CreatorType": "",
+      "GeneratorId": "",
+      "GeneratorType": "",
+      "TargetId": "16:79:50:B2:6F:86",
+      "TargetType": "",
+      "TargetContext": "",
+      "Body": [],
+      "BodyProperties": [
+        {
+          "Key": "Category",
+          "Value": "Device"
+        },
+        {
+          "Key": "DeviceUniqueID",
+          "Value": "{DeviceID}"
+        },
+        {
+          "Key": "TimeStamp",
+          "Value": "2019-02-12T23:22:13Z"
+        },
+        {
+          "Key": "Type",
+          "Value": "{Type}"
+        },
+        {
+          "Key": "Family",
+          "Value": ""
+        },
+        {
+          "Key": "Name",
+          "Value": "{DeviceID}"
+        },
+        {
+          "Key": "Model",
+          "Value": "{Model}"
+        },
+        {
+          "Key": "IPAddress",
+          "Value": "10.77.42.14"
+        },
+        {
+          "Key": "FirmwareVersion",
+          "Value": "Ver:19.07_HM2_0160 0006"
+        },
+        {
+          "Key": "OSInfo",
+          "Value": ""
+        },
+        {
+          "Key": "wifimacaddress",
+          "Value": "84:25:3F:2E:86:9E"
+        },
+        {
+          "Key": "Useremail",
+          "Value": "opintel@honeywell.com"
+        },
+        {
+          "Key": "SystemType",
+          "Value": "opintel"
+        },
+        {
+          "Key": "SystemGuid",
+          "Value": "{SystemGUID}"
+        }
+      ],
+      "EventType": "NewConnectionEvent"
+    },
+    "AnnotationStreamIds": ","
+  }

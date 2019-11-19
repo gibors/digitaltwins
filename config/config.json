@@ -1,16 +1,15 @@
 {
     "Endpoints": {
             "AuthApi": { 
-                "url": "http://localhost:61452/api/auth",
+                "url": "https://dev.apis.caidc.honeywell.com/api/auth",
                 "method": "POST"
             }, 
             "GetTenantInfo": {
-                "url": "http://localhost:61452/api/tenants/devices/{deviceID}",
+                "url": "https://dev.apis.caidc.honeywell.com/api/tenants/devices/{deviceID}",
                 "method": "GET"
-            },
-        
+            },        
             "AssociateTenant": {
-                "url":"http://localhost:61452/api/tenants/{tenantID}/devices/{deviceID}",
+                "url":"https://dev.apis.caidc.honeywell.com/api/tenants/{tenantID}/devices/{deviceID}",
                 "method": "PUT"
             },            
             "OnboardDeviceMobile": {

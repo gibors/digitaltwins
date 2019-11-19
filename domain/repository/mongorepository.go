@@ -1,30 +1,49 @@
 package repository
 
-// import (
-// 	"go.mongodb.org/mongo-driver/mongo"
-// 	"go.mongodb.org/mongo-driver/mongo/options"
-// 	"os"
-// 	"context"
-// )
+import (
+	dev "caidc_auto_devicetwins/domain/model"
+	"context"
+	"log"
 
-// type MongoClient struct {
-// 	Client                     *mongo.Client
-// 	DMCollection *mongo.Collection
-// }
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
-// func getMongoClient() (*mongo.Client, error){
-// 	DMSTRING = os.Getenv(DbConnectionString_DM)
-// 	clientOptions := options.Client().ApplyURI(DMSTRING)
-// 	client, err := mongo.Connect(context.TODO(), clientOptions)
-// 	if err !=  nil {
-// 		return (nil, error.Error(err))
-// 	}
-// 	return client
-// }
+type MongoClient struct {
+	ClientAut         *mongo.Client
+	ClientLocal       *mongo.Client
+	DMCollectionAut   *mongo.Collection
+	DMCollectionLocal *mongo.Collection
+}
 
-// func (c *MongoClient) GetDeviceInserted(serialNumber string) map[string]interface{} {
+func GetMongoClient(connectionString string) (*mongo.Client, error) {
+	clientOptions := options.Client().ApplyURI(connectionString)
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		return nil, err
+	}
 
-// 	device : = c.DMCollection.find({"serialNumber": serialNumber})
-// 	log.Println(device)
-// 	return nil
-// }
+	return client, nil
+}
+
+func (c *MongoClient) GetDeviceInserted(serialNumber string) (dev.Device, error) {
+	filter := bson.D{{"serialNumber", serialNumber}}
+	var device = dev.Device{}
+	err := c.DMCollectionAut.FindOne(context.TODO(), filter).Decode(&device)
+	if err != nil {
+		return device, err
+	}
+	return device, nil
+}
+
+func (c *MongoClient) InsertDevice(newDevice dev.Device) (bool, error) {
+
+	insertResult, err := c.DMCollectionLocal.InsertOne(context.TODO(), newDevice)
+	if err != nil {
+
+		return false, err
+	}
+	log.Println(insertResult)
+	return true, nil
+}
