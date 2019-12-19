@@ -1,0 +1,30 @@
+{
+    "CloudPlatformEvent": {
+      "CreatedTime": "{CreatedTime}",
+      "Id": "09eded4f-ccac-4b9e-a742-1dc5132542c8",
+      "CreatorId": "0f91a940-8567-4eb7-b8f5-a1f942b3fd99",
+      "CreatorType": "CloudPlatformSystem",
+      "GeneratorId": null,
+      "GeneratorType": "CloudPlatformTenant",
+      "TargetId": "0f91a940-8567-4eb7-b8f5-a1f942b3fd99",
+      "TargetType": "CloudPlatformTenant",
+      "TargetContext": null,
+      "Body": {
+        "Type": "TextualBody",
+        "Value": "{Value}",
+        "Format": "application/json"
+      },
+      "BodyProperties": [
+        {
+          "Key": "SystemType",
+          "Value": "{SystemType}"
+        },
+        {
+          "Key": "SystemGuid",
+          "Value": "{SystemGUID}"
+        }
+      ],
+      "EventType": "DataChange.Update"
+    },
+    "AnnotationStreamIds": ","
+  },

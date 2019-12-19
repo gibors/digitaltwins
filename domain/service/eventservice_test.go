@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,8 +52,12 @@ const MESSAGE = `{
 
 func TestTestConnection(t *testing.T) {
 	queueConfig := QueueConfig{}
-	queueConfig.Url = "40.77.30.88:5672"
-	queueConfig.PublishNewConnectionEvent("notifications", MESSAGE)
-
+	queueConfig.URL = "40.77.30.88:5672"
+	queueConfig.PublishEvent("notifications", MESSAGE)
+	log.Println(queueConfig)
 	assert.NotNil(t, queueConfig.Connection)
+}
+
+func TestSuscribeEvent(t *testing.T) {
+	// queueConfig := QueueConfig{}
 }

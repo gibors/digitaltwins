@@ -19,8 +19,8 @@ type Tenant struct {
 }
 
 type Property struct {
-	Name  string  `json:"name"`
-	Value *string `json:"value"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 func (t *Tenant) ToString() string {

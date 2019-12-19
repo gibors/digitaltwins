@@ -2,24 +2,30 @@ package main
 
 import (
 	"caidc_auto_devicetwins/config"
-	device "caidc_auto_devicetwins/domain/model"
-	"caidc_auto_devicetwins/domain/service"
 	"log"
+	"os"
 )
 
 func main() {
-	tenantID := "5dbe56e6f5b7d751f8940a87"
+	var tenantID string
+	if len(os.Args) > 1 {
+		tenantID = os.Args[1]
+		log.Println(tenantID)
+	} else {
+		log.Fatal("missing TenantID, it should be passed as parameter")
+	}
 
 	log.Println("Device simulation started.. ")
 
 	values := config.GetConfigValues()
+	log.Println(values)
 
-	completed, err := service.OnboardDeviceOnPremise(values, "CT60", "MyFirstDevice",
-		device.MOBILECOMPUTER, tenantID)
+	// completed, err := service.OnboardDeviceOnPremise(values, "CT60", "MyFirstDevice",
+	// 	device.MOBILECOMPUTER, tenantID)
 
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		log.Printf("Succesfully onboarded %t", completed)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// } else {
+	// 	log.Printf("Succesfully onboarded %t", completed)
+	// }
 }

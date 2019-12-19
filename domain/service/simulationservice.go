@@ -17,6 +17,7 @@ func OnboardDeviceOnPremise(conf config.Configuration, model string,
 	//TODO: generate signature when creating device
 	signature := "MEQCIAb6DNjdsxDh+flzqXQpYIB5gQvwMEjcURmbB3lRIjzhAiAw7L+nOf2qnrR7+gZQR8HGx5o3qLKYFsqyTtN54TxKbw=="
 	deviceID := "CN80_17340D8241"
+	NEWCONNECTIONMESSAGE := "newconnectionmessage"
 
 	repo := repository.Repository{
 		ConfigParams: conf,
@@ -43,14 +44,14 @@ func OnboardDeviceOnPremise(conf config.Configuration, model string,
 	queueEndpoint := FindPropertyByName("queue", infoTenant.Properties)
 	queueKey := FindPropertyByName("queuekey", infoTenant.Properties)
 
-	authAPI := string(*apiEndpoint.Value) + "/api/auth"
+	authAPI := apiEndpoint.Value + "/api/auth"
 
 	queueToken := repo.GetQueueToken(authAPI)
 	queueConfig := QueueConfig{}
 	queueConfig.Key = queueKey.Value
 	queueConfig.URL = queueEndpoint.Value
 	queueConfig.Token = queueToken
-	queueConfig.PublishNewConnectionEvent("device", GetNewConnectionEvent(dev.Device{}))
+	queueConfig.PublishEvent("device", GetMessageEvent(dev.Device{}, NEWCONNECTIONMESSAGE)) // new connection event after onboarding successfully
 
 	return true, nil
 }

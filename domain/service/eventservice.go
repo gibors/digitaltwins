@@ -8,20 +8,21 @@ import (
 	"os"
 
 	"github.com/streadway/amqp"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 type QueueConfig struct {
-	Key        *string
+	Key        string
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
-	URL        *string
+	URL        string
 	Name       string
 	Token      string
 }
 
 func (q *QueueConfig) CreateQueConnection(queName string) {
 
-	connString := fmt.Sprintf("amqp://:%s@%s/", q.Token, *q.URL)
+	connString := fmt.Sprintf("amqp://:%s@%s/", q.Token, q.URL)
 	log.Println(connString)
 	conn, err := amqp.Dial(connString)
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -42,7 +43,7 @@ func (q *QueueConfig) CloseConnection() {
 	}
 }
 
-func (q *QueueConfig) PublishNewConnectionEvent(eventType string, message string) {
+func (q *QueueConfig) PublishEvent(eventType string, message string) {
 	q.CreateQueConnection(eventType)
 
 	err := q.Channel.Publish(
@@ -56,6 +57,10 @@ func (q *QueueConfig) PublishNewConnectionEvent(eventType string, message string
 		})
 	failOnError(err, "Failed to publish a message")
 	q.CloseConnection()
+}
+
+func (q *QueueConfig) SubscribeToQueue(eventType string) {
+	q.CreateQueConnection(eventType)
 }
 
 func (q *QueueConfig) TestConnection(queueName string) {
@@ -80,9 +85,10 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func GetNewConnectionEvent(dev device.Device) string {
-	pwd, _ := os.Getwd()
-	jsonFile, err := os.Open(pwd + "/resources/newconnectionmessage.json")
+func GetMessageEvent(dev device.Device, eventMessageType string) string {
+
+	filePath := "./resources/" + eventMessageType + ".json"
+	jsonFile, err := os.Open(filePath)
 
 	failOnError(err, "Failed to open json file")
 
@@ -93,4 +99,8 @@ func GetNewConnectionEvent(dev device.Device) string {
 	log.Println(newconnstr)
 
 	return newconnstr
+}
+
+func GenerateNewConnectionData(d device.Device) string {
+	return ""
 }

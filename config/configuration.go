@@ -1,8 +1,8 @@
 package config
 
 import (
+	"caidc_auto_devicetwins/domain/utils"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -26,22 +26,16 @@ type Params struct {
 }
 
 func GetConfigValues() Configuration {
-	pwd, _ := os.Getwd()
 	var conf Configuration
 
-	jsonFile, err := os.Open(pwd + "/config/config.json")
+	configFile, err := os.Open("./resources/config.json")
+	path, _ := os.Getwd()
+	log.Printf("path: %s", path)
+	utils.FailOnError(err, "Failed when reading config file")
 
-	if err != nil {
-		log.Print("Error reading config file: ")
-		log.Fatal(err)
-		return conf
-	}
+	jsonParser := json.NewDecoder(configFile)
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	log.Printf("read file: %s\n", string(byteValue))
-
-	json.Unmarshal(byteValue, &conf)
+	jsonParser.Decode(&conf)
 
 	return conf
 }

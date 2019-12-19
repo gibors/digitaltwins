@@ -1,6 +1,6 @@
 {
     "CloudPlatformEvent": {
-      "CreatedTime": "0001-01-01T00:00:00+00:00",
+      "CreatedTime": "{CreatedTime}",
       "Id": "",
       "CreatorId": "",
       "CreatorType": "",
@@ -21,7 +21,7 @@
         },
         {
           "Key": "TimeStamp",
-          "Value": "2019-02-12T23:22:13Z"
+          "Value": "{Timestamp}"
         },
         {
           "Key": "Type",
@@ -29,7 +29,7 @@
         },
         {
           "Key": "Family",
-          "Value": ""
+          "Value": "{Family}"
         },
         {
           "Key": "Name",
@@ -41,27 +41,27 @@
         },
         {
           "Key": "IPAddress",
-          "Value": "10.77.42.14"
+          "Value": "{IPAddress}"
         },
         {
           "Key": "FirmwareVersion",
-          "Value": "Ver:19.07_HM2_0160 0006"
+          "Value": "{FirmwareVersion}"
         },
         {
           "Key": "OSInfo",
-          "Value": ""
+          "Value": "{OSInfo}"
         },
         {
           "Key": "wifimacaddress",
-          "Value": "84:25:3F:2E:86:9E"
+          "Value": "{wifimacaddress}"
         },
         {
           "Key": "Useremail",
-          "Value": "opintel@honeywell.com"
+          "Value": "{Useremail}"
         },
         {
           "Key": "SystemType",
-          "Value": "opintel"
+          "Value": "{SystemType}"
         },
         {
           "Key": "SystemGuid",
