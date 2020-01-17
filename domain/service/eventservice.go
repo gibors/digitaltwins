@@ -1,14 +1,16 @@
 package service
 
 import (
+	"caidc_auto_devicetwins/domain/factory"
 	device "caidc_auto_devicetwins/domain/model"
+	"caidc_auto_devicetwins/domain/utils"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 
 	"github.com/streadway/amqp"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 type QueueConfig struct {
@@ -102,5 +104,10 @@ func GetMessageEvent(dev device.Device, eventMessageType string) string {
 }
 
 func GenerateNewConnectionData(d device.Device) string {
-	return ""
+	connectionEvent := factory.CreateNewConnectionEvent(d)
+	b, err := json.Marshal(connectionEvent)
+
+	utils.FailOnError(err, "Failed to Marshall event object")
+
+	return string(b)
 }

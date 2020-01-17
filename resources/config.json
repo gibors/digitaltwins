@@ -13,15 +13,15 @@
                 "method": "PUT"
             },            
             "OnboardDeviceMobile": {
-                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
+                "url": "https://dev.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
                 "method": "POST"
             },
             "OnboardingToken": {
-                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/token",
+                "url": "https://dev.apis.caidc.honeywell.com/api/deviceonboarding/token",
                 "method": "POST"
             },                
             "OnboardDeviceGateway": {
-                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/cloudgateway",
+                "url": "https://dev.apis.caidc.honeywell.com/api/deviceonboarding/cloudgateway",
                 "method": "POST"
             }
         } ,

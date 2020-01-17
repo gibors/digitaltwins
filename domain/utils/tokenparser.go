@@ -2,8 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -18,20 +16,16 @@ type TokenDetail struct {
 }
 
 func GetTokenDetails() OnboardingToken {
-	pwd, _ := os.Getwd()
 	var tokenConf OnboardingToken
 
-	jsonFile, err := os.Open(pwd + "/domain/utils/token.json")
+	jsonFile, err := os.Open("./resources/token.json")
 
-	if err != nil {
-		log.Print("Error reading config file: ")
-		log.Fatal(err)
-		return tokenConf
-	}
+	FailOnError(err, "failed to read file")
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	jsonParser := json.NewDecoder(jsonFile)
 
-	json.Unmarshal(byteValue, &tokenConf)
+	jsonParser.Decode(&tokenConf)
 
 	return tokenConf
+
 }

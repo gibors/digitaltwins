@@ -18,13 +18,14 @@ const PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEANeSK4az0LE8qOLpss7JF25I
 var seededRand *rand.Rand = rand.New(
 	rand.NewSource(time.Now().UnixNano()))
 
-func CreateDevice(alias string, model string, deviceType string) device.Device {
+func CreateDevice(model string, deviceType string) device.Device {
 
 	randID := generateRandomId(LENGTH)
 	var device = device.Device{
-		Model: model,
-		Type:  deviceType,
-		Name:  alias}
+		Model:      model,
+		Type:       deviceType,
+		SystemType: "opintel",
+	}
 
 	var b bytes.Buffer
 	var serial = "MAUT" + randID
@@ -37,6 +38,7 @@ func CreateDevice(alias string, model string, deviceType string) device.Device {
 	b.WriteString(serial)
 	device.SerialNumber = b.String()
 	device.PublicKey = PUBLIC_KEY
+	device.Name = device.SerialNumber
 
 	return device
 }

@@ -5,7 +5,8 @@ import (
 	"caidc_auto_devicetwins/config"
 	device "caidc_auto_devicetwins/domain/model"
 	"caidc_auto_devicetwins/domain/utils"
-	"crypto/tls"
+
+	// "crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -22,68 +23,69 @@ type Repository struct {
 func (r *Repository) OnboardDevice(dev device.Device) bool {
 
 	tokenDetails := utils.GetTokenDetails()
+	log.Println("token details: ")
+	log.Println(tokenDetails)
+	// requestBody := map[string]interface{}{
+	// 	"QRCodeHash": tokenDetails.TokenDetails.TokenHash,
+	// 	"TokenId":    tokenDetails.TokenDetails.TokenID,
+	// 	"RegistrationDetails": map[string]string{
+	// 		"Ownershipcode": dev.SerialNumber,
+	// 		"PublicKey":     dev.PublicKey,
+	// 		"SystemId":      dev.SystemID,
+	// 	},
+	// }
+	// reqBody, err := json.Marshal(requestBody)
+	// if err != nil {
+	// 	log.Fatal("Error on creating request body: ")
+	// 	log.Fatal(err.Error())
+	// }
+	// var url string
+	// method := r.ConfigParams.EndPoints.OnboardDeviceMobile.Method
+	// if dev.Type == device.GATEWAY {
+	// 	url = r.ConfigParams.EndPoints.OnboardDeviceGateway.URL
+	// } else if dev.Type == device.MOBILECOMPUTER {
+	// 	url = r.ConfigParams.EndPoints.OnboardDeviceMobile.URL
+	// }
 
-	requestBody := map[string]interface{}{
-		"QRCodeHash": tokenDetails.TokenDetails.TokenHash,
-		"TokenId":    tokenDetails.TokenDetails.TokenID,
-		"RegistrationDetails": map[string]string{
-			"Ownershipcode": dev.SerialNumber,
-			"PublicKey":     dev.PublicKey,
-			"SystemId":      dev.SystemID,
-		},
-	}
-	reqBody, err := json.Marshal(requestBody)
-	if err != nil {
-		log.Fatal("Error on creating request body: ")
-		log.Fatal(err.Error())
-	}
-	var url string
-	method := r.ConfigParams.EndPoints.OnboardDeviceMobile.Method
-	if dev.Type == device.GATEWAY {
-		url = r.ConfigParams.EndPoints.OnboardDeviceGateway.URL
-	} else if dev.Type == device.MOBILECOMPUTER {
-		url = r.ConfigParams.EndPoints.OnboardDeviceMobile.URL
-	}
+	// req := utils.GenerateRequest(nil, url, method, tokenDetails.TokenDetails.JWTToken, reqBody)
 
-	req := utils.GenerateRequest(nil, url, method, tokenDetails.TokenDetails.JWTToken, reqBody)
+	// timeout := time.Duration(100 * time.Second)
+	// tr := &http.Transport{
+	// 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	// }
+	// client := http.Client{Timeout: timeout, Transport: tr}
+	// log.Println("Request header : ")
+	// log.Println(req.Header)
+	// log.Println("Request body : ")
+	// log.Println(req.Body)
 
-	timeout := time.Duration(100 * time.Second)
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := http.Client{Timeout: timeout, Transport: tr}
-	log.Println("Request header : ")
-	log.Println(req.Header)
-	log.Println("Request body : ")
-	log.Println(req.Body)
+	// response, err := client.Do(req)
 
-	response, err := client.Do(req)
+	// if err != nil {
+	// 	log.Fatalln("Error while onboarding device: ")
+	// 	log.Fatalln(err)
+	// 	return false
+	// }
 
-	if err != nil {
-		log.Fatalln("Error while onboarding device: ")
-		log.Fatalln(err)
-		return false
-	}
+	// defer response.Body.Close()
 
-	defer response.Body.Close()
+	// if response.StatusCode != 200 {
+	// 	log.Fatal("Error: ")
+	// 	log.Fatal(response.StatusCode)
+	// 	log.Fatal(response.Status)
+	// 	return false
+	// }
 
-	if response.StatusCode != 200 {
-		log.Fatal("Error: ")
-		log.Fatal(response.StatusCode)
-		log.Fatal(response.Status)
-		return false
-	}
+	// var result map[string]interface{}
+	// json.NewDecoder(response.Body).Decode(&result)
 
-	var result map[string]interface{}
-	json.NewDecoder(response.Body).Decode(&result)
+	// status := result["statusCode"].(float64)
 
-	status := result["statusCode"].(float64)
+	// log.Printf("result: %s", result)
 
-	log.Printf("result: %s", result)
-
-	if status != 16 {
-		return false
-	}
+	// if status != 16 {
+	// 	return false
+	// }
 
 	return true
 }

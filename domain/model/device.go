@@ -48,6 +48,7 @@ type Device struct {
 	PublicKey                 string              `bson:"-"`
 	ActiveStatus              bool                `bson:"-"`
 	SystemID                  string              `bson:"-"`
+	SystemType                string              `bson:"-"`
 }
 
 const (

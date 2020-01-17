@@ -12,7 +12,7 @@ import (
 
 const GDEVICEAPP = "GDEVICEAPP"
 const DEVICEAPP = "DEVICEAPP"
-const BROKERAPP = "BROKERAPP"
+const BROKERAPP = "BROKER-RABBITMQ"
 
 func (r *Repository) GetGlobalToken(signature string, deviceID string) string {
 	return r.GetToken(GDEVICEAPP, signature, deviceID, nil)

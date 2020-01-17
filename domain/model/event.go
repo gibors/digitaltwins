@@ -1,9 +1,11 @@
 package device
 
-import "time"
-
+type EventMessage struct {
+	PlatformEventMessage CloudPlatformEvent `json:"CloudPlatformEvent"`
+	AnnotationStreamIds  string             `json:"AnnotationStreamIds"`
+}
 type CloudPlatformEvent struct {
-	CreatedTime    time.Time      `json:"createdTime"`
+	CreatedTime    string         `json:"CreatedTime"`
 	ID             *string        `json:"Id"`
 	CreatorID      *string        `json:"CreatorId"`
 	CreatorType    *string        `json:"CreatorType"`
@@ -25,5 +27,5 @@ type Body struct {
 
 type BodyProperty struct {
 	Key   string
-	Value string
+	Value *string
 }
