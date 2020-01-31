@@ -18,10 +18,11 @@ func main() {
 	}
 
 	log.Println(">>> Device simulation started.. ")
-	log.Println("")
+	log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	values := config.GetConfigValues()
-	log.Println(values)
+	log.Println("Configuration file read >>> ")
 
 	completed, err := service.OnboardDeviceOnPremise(values, "CT60",
 		device.MOBILECOMPUTER, tenantID)
