@@ -29,3 +29,9 @@ type BodyProperty struct {
 	Key   string
 	Value *string
 }
+
+const (
+	DEVICEQ    = "device"
+	EVENTQ     = "event"
+	TELEMETRYQ = "telemetry"
+)

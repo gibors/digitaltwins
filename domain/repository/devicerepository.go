@@ -50,7 +50,7 @@ func (r *Repository) OnboardDevice(dev device.Device) bool {
 
 	req := utils.GenerateRequest(nil, url, method, tokenDetails.TokenDetails.JWTToken, reqBody)
 
-	timeout := time.Duration(100 * time.Second)
+	timeout := time.Duration(200 * time.Second)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

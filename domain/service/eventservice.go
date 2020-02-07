@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/streadway/amqp"
 )
@@ -45,7 +48,7 @@ func (q *QueueConfig) CloseConnection() {
 	}
 }
 
-func (q *QueueConfig) PublishEvent(eventType string, message string) {
+func (q *QueueConfig) PublishEventToRabbit(eventType string, message string) {
 	q.CreateQueConnection(eventType)
 
 	err := q.Channel.Publish(
@@ -87,7 +90,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func GetMessageEvent(dev device.Device, eventMessageType string) string {
+func CreateDeviceMessageEvent(dev device.Device, eventMessageType string) string {
 
 	filePath := "./resources/" + eventMessageType + ".json"
 	jsonFile, err := os.Open(filePath)
@@ -110,4 +113,47 @@ func GenerateNewConnectionData(d device.Device) string {
 	utils.FailOnError(err, "Failed to Marshall event object")
 
 	return string(b)
+}
+
+func CreateTelemetryEvent(d device.Device) string {
+
+	filePath := "./resources/telemetrymessage.json"
+	jsonFile, err := os.Open(filePath)
+
+	failOnError(err, "Failed to open json file")
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	telemetryEvent := string(byteValue)
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{CreatedTime}", utils.GenerateEventTimeStamp())
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{SystemGUID}", d.SystemGUID)
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{SystemType}", d.SystemType)
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{SerialNumber}", d.SerialNumber)
+
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.repcap.value}", string(generateRandomValue(5550, 5570)))  // reported capacity
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.repsoc.value}", string(generateRandomValue(10, 100)))     // reported state of charge
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.soh.value}", string(generateRandomValue(0, 100)))         // battery age value
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcap.value}", string(generateRandomValue(5520, 5590))) //mAh full capacity of battery at pressent
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.tte.value}", string(generateRandomValue(330000, 369090))) // tte
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.designcap.value}", string(generateRandomValue(5866, 5866)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxtemp.value}", string(generateRandomValue(31, 31)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.cyclecount.value}", string(generateRandomValue(30, 100)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.timerh.value}", string(generateRandomValue(19066400, 19086400)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.mintemp.value}", string(generateRandomValue(22, 22)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.minvolt.value}", string(generateRandomValue(3, 3)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxvolt.value}", string(generateRandomValue(4, 4)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxcurrent.value}", string(generateRandomValue(2, 4)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.mincurrent.value}", string(generateRandomValue(-1, 1)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.ttf.value}", string(generateRandomValue(5550, 5570)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcapnom.value}", string(generateRandomValue(366634, 369634)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcaprep.value}", string(generateRandomValue(5548, 5588)))
+
+	return telemetryEvent
+}
+
+func generateRandomValue(start int, end int) int {
+	if end < start {
+		log.Fatal("start should be less than end ")
+	}
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(end-start+1) + start
 }

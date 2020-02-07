@@ -8,12 +8,59 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func OnboardDeviceOnPremise(conf config.Configuration, model string,
-	dtype string, tenantID string) (bool, error) {
+const SIGNATURE = "MEQCIB+KXWEnlxHAVjJIra/LDM0p3mbPAKM/pRpzcivCx0w/AiAxVUi/aFCDCp0/nB/OKQdtjtIQYcksLbkOPMXhFXqnMQ=="
+const DEVICE_ID = "CT60_03VR2FVES7" // DEVICEID
+const AUTDMSTRING = "mongodb://dmsdkuser:Honeywe!!Up!nThe$ky786@devcaidcdb-01.westus.cloudapp.azure.com:24403/devicemanagement?readPreference=primary"
+
+type SimulationConfig struct {
+	TenantInfo  dev.Tenant
+	RepoValue   repository.Repository
+	QueueValues QueueConfig
+	MongoCl     repository.MongoClient
+}
+
+func (s *SimulationConfig) InitSimulation(conf config.Configuration, tenantID string) {
+	DMSTRING := os.Getenv("DbConnectionString_DM")
+	DMSTRING = DecryptString(DMSTRING)
+
+	s.MongoCl = repository.MongoClient{}
+
+	//Get Global Token
+	s.RepoValue = repository.Repository{
+		ConfigParams: conf,
+	}
+
+	s.RepoValue.GlobalToken = s.RepoValue.GetGlobalToken(SIGNATURE, DEVICE_ID)
+	s.RepoValue.TenantToken = s.RepoValue.GetTenantToken(SIGNATURE, DEVICE_ID)
+	s.TenantInfo = s.RepoValue.GetTenantInformation(tenantID)
+
+	apiEndpoint := FindPropertyByName("SinapsApi", s.TenantInfo.Properties)
+	queueEndpoint := FindPropertyByName("queue", s.TenantInfo.Properties)
+
+	authAPI := apiEndpoint.Value + "/api/auth"
+	s.QueueValues.Token = s.RepoValue.GetQueueToken(authAPI)
+	log.Println(s.QueueValues.Token)
+	s.QueueValues.URL = queueEndpoint.Value
+
+	var clientError error
+	s.MongoCl.ClientAut, clientError = repository.GetMongoClient(AUTDMSTRING)
+	utils.FailOnError(clientError, "Error when creating cloud mongodb client")
+	s.MongoCl.DMCollectionAut = s.MongoCl.ClientAut.Database("devicemanagement").Collection("devices")
+
+	s.MongoCl.ClientLocal, clientError = repository.GetMongoClient(DMSTRING)
+	utils.FailOnError(clientError, "Error when creating Local mongodb client")
+	s.MongoCl.DMCollectionLocal = s.MongoCl.ClientLocal.Database("devicemanagement").Collection("devices")
+
+	log.Println("Successfully simulation initiated  ")
+}
+
+func (s *SimulationConfig) OnboardDeviceOnPremise(model string, dtype string) (bool, error) {
+
 	log.Println("Creating device >>>")
 
 	device := CreateDevice(model, dtype)
@@ -21,49 +68,31 @@ func OnboardDeviceOnPremise(conf config.Configuration, model string,
 	log.Printf("Device created >>> %s", device.SerialNumber)
 	log.Println("")
 
-	//TODO: generate signature when creating device
-	signature := "MEQCIB+KXWEnlxHAVjJIra/LDM0p3mbPAKM/pRpzcivCx0w/AiAxVUi/aFCDCp0/nB/OKQdtjtIQYcksLbkOPMXhFXqnMQ=="
-	deviceID := "CT60_03VR2FVES7"
-
-	repo := repository.Repository{
-		ConfigParams: conf,
-	}
-
-	log.Println("Getting global token... >>> ")
-	repo.GlobalToken = repo.GetGlobalToken(signature, deviceID)
-
-	log.Println("Associating device to tenant..  >>> ")
-	repo.AssociteDeviceToAtenant(device.SystemID, tenantID)
-	log.Println("Device successfully associated >>> ")
-
 	log.Println("Onboarding device.. >>> ")
-	onboardingSucced := repo.OnboardDevice(device)
+	onboardingSucced := s.RepoValue.OnboardDevice(device)
+	WaitCall()
 
-	var systemGuid = ""
+	var systemGUID = ""
 
 	if onboardingSucced == true {
+		log.Printf("Successfully onboarded device: %s ", device.SerialNumber)
+		log.Println(" ")
 
-		log.Printf("Device onbaorded suscessfully %s", device.SerialNumber)
-		systemGuid = insertDeviceFromDev(device.SerialNumber)
-		infoTenant := repo.GetTenantInformation(device.SystemID)
-		log.Println("Tenant information: ")
-		log.Println(infoTenant)
-		repo.TenantToken = repo.GetTenantToken(signature, deviceID)
+		log.Println("Associating device to tenant..  >>> ")
+		s.RepoValue.AssociteDeviceToAtenant(device.SystemID, s.TenantInfo.TenantID.Hex())
+		WaitCall()
+		log.Println("Device successfully associated to Tenant >>> ")
 
-		apiEndpoint := FindPropertyByName("api", infoTenant.Properties)
-		queueEndpoint := FindPropertyByName("queue", infoTenant.Properties)
-		queueKey := FindPropertyByName("queuekey", infoTenant.Properties)
+		systemGUID = s.insertDeviceFromDev(device.SerialNumber)
 
-		authAPI := apiEndpoint.Value + "/api/auth"
+		log.Printf("systemGUID of inserted device: %s", systemGUID)
 
-		queueToken := repo.GetQueueToken(authAPI)
-		log.Printf("Queue Toke: %s", queueToken)
-		queueConfig := QueueConfig{}
-		queueConfig.Key = queueKey.Value
-		queueConfig.URL = queueEndpoint.Value
-		queueConfig.Token = queueToken
-		device.SystemGUID = systemGuid
-		queueConfig.PublishEvent("device", GenerateNewConnectionData(device)) // new connection event after onboarding successfully
+		device.SystemGUID = systemGUID
+		log.Println("publishing New Connection Event ... >>> ")
+		newConnectionEvent := GenerateNewConnectionData(device)
+		log.Printf(" Event: %s ", newConnectionEvent)
+		log.Println(" ")
+		s.QueueValues.PublishEventToRabbit("device", newConnectionEvent) // new connection event after onboarding successfully
 
 		return true, nil
 	}
@@ -71,72 +100,27 @@ func OnboardDeviceOnPremise(conf config.Configuration, model string,
 	return false, fmt.Errorf("Onboarded Failed>>>")
 }
 
-func sendEvents() {
+func (s *SimulationConfig) SendEvents(serialNumber string, queue string) bool {
+	device, err := s.MongoCl.GetDeviceInserted(serialNumber)
+	utils.FailOnError(err, "Error get device from cloud db")
 
+	telemetryData := CreateTelemetryEvent(device)
+	s.QueueValues.PublishEventToRabbit(queue, telemetryData)
+
+	return true
 }
 
-//TODO: Work around to insert device locally once onboarded on automation( we need to figure this out )
-func insertDeviceFromAutomation() {
-	cl := repository.MongoClient{}
-	DMSTRING := os.Getenv("DbConnectionString_DM")
-	DMSTRING = DecryptString(DMSTRING)
-	AUTDMSTRING := "mongodb://dmdbadmin:Honeywe!!Up!nThe$ky786@caidcautdb001.westus.cloudapp.azure.com:47017/devicemanagement?readPreference=primary"
-
-	autClient, err := repository.GetMongoClient(AUTDMSTRING)
-
-	utils.FailOnError(err, "Error getting mongo client")
-
-	cl.ClientAut = autClient
-
-	cl.DMCollectionAut = autClient.Database("devicemanagement").Collection("devices")
-
-	device, err := cl.GetDeviceInserted("CT60MAUTXPP7P1")
-
-	utils.FailOnError(err, "Error when getting device")
-
-	client, err := repository.GetMongoClient(DMSTRING)
-
-	utils.FailOnError(err, "Error getting mongo client")
-
-	cl.ClientLocal = client
-	cl.DMCollectionLocal = client.Database("devicemanagement").Collection("devices")
-
-	result, err := cl.InsertDevice(device)
-
-	utils.FailOnError(err, "Failed while inserting device to DM db")
-
-	log.Printf("Inserted device successfully %v", result)
-}
-
-func insertDeviceFromDev(deviceId string) string {
-	cl := repository.MongoClient{}
-	DMSTRING := os.Getenv("DbConnectionString_DM")
-	DMSTRING = DecryptString(DMSTRING)
-	AUTDMSTRING := "mongodb://dmsdkuser:Honeywe!!Up!nThe$ky786@devcaidcdb-01.westus.cloudapp.azure.com:24403/devicemanagement?readPreference=primary"
-
-	autClient, err := repository.GetMongoClient(AUTDMSTRING)
-
-	utils.FailOnError(err, "Error getting mongo client")
-
-	cl.ClientAut = autClient
-
-	cl.DMCollectionAut = autClient.Database("devicemanagement").Collection("devices")
+func (s *SimulationConfig) insertDeviceFromDev(deviceId string) string {
 
 	log.Println("Getting device onboarded from DB... >>> ")
 
-	device, err := cl.GetDeviceInserted(deviceId)
+	device, err := s.MongoCl.GetDeviceInserted(deviceId)
 
 	utils.FailOnError(err, "Error when getting device")
 
-	client, err := repository.GetMongoClient(DMSTRING)
-
-	utils.FailOnError(err, "Error getting mongo client")
-
-	cl.ClientLocal = client
-	cl.DMCollectionLocal = client.Database("devicemanagement").Collection("devices")
 	ID, _ := primitive.ObjectIDFromHex("5b309711001f0c3fd0ff8dce")
 	device.OrganizationUnitKey = &ID
-	result, err := cl.InsertDevice(device)
+	result, err := s.MongoCl.InsertDevice(device)
 
 	utils.FailOnError(err, "Failed while inserting device to DM db")
 
@@ -151,4 +135,8 @@ func FindPropertyByName(name string, props []dev.Property) dev.Property {
 		}
 	}
 	return dev.Property{}
+}
+
+func WaitCall() {
+	time.Sleep(1 * time.Second)
 }

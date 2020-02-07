@@ -7,7 +7,7 @@ import (
 )
 
 func TestDecryptString(t *testing.T) {
-	encryptedString := "KSW2WyinU0AehJHZiXlBt/0iQke6D2/cUEN75Uq94YxHalJsA8Dz82eHC3spu3J5D7dDrpSPaGwD7Qn6fNGhBU4MU3TZvX+BClGnu7PLoMxYfSzamMZnDPJ/6qmdvty0eLOn8iuiRh7tum36D+eg+WbdNSeogCmN+TT4ScenPwU="
+	encryptedString := "gVjhAY6mHuiDKF0dczUGIjWTd6Uf5Hw6rbipQSZTxtvTOrI6o/SJq951hOM5PsZDJ1IBhi2juVzBrl1mcnN/KniEnHJDW/dUB7vQocfzMLWxUW7DGdcoMxgbLjhAl/bI2dqB5Uwz3dFKkmhWP7Cw/RJ7h5c88N30tbB8LMr8PUOfDNTBZv9brwLHn8c+AFw0"
 
 	value := DecryptString(encryptedString)
 

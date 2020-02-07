@@ -3,20 +3,22 @@ package service
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 )
 
 func DecryptString(text string) string {
-	CIPHER_KEY := []byte("1180228033804480")
+	SECRET := []byte("#my*S3cr3t")
 	iv := "9980888077806680"
 	ciphertext, err := base64.StdEncoding.DecodeString(text)
-
+	cipherKey := sha256.Sum256(SECRET)
+	key := cipherKey[:]
 	if err != nil {
 		panic(err)
 	}
 
-	block, err := aes.NewCipher([]byte(CIPHER_KEY))
+	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		panic(err)
 	}

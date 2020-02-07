@@ -48,7 +48,7 @@ func (r *Repository) GetToken(clientType string, accessToken string, deviceID st
 	tokenEmpty := ""
 	request := utils.GenerateRequest(header, url, method, tokenEmpty, requestBody)
 
-	timeout := time.Duration(60 * time.Second)
+	timeout := time.Duration(100 * time.Second)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

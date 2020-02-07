@@ -1,30 +1,30 @@
 {
-    "CloudPlatformEvent": {
-      "CreatedTime": "{CreatedTime}",
-      "Id": "09eded4f-ccac-4b9e-a742-1dc5132542c8",
-      "CreatorId": "0f91a940-8567-4eb7-b8f5-a1f942b3fd99",
-      "CreatorType": "CloudPlatformSystem",
-      "GeneratorId": null,
-      "GeneratorType": "CloudPlatformTenant",
-      "TargetId": "0f91a940-8567-4eb7-b8f5-a1f942b3fd99",
-      "TargetType": "CloudPlatformTenant",
-      "TargetContext": null,
-      "Body": {
-        "Type": "TextualBody",
-        "Value": "{Value}",
-        "Format": "application/json"
-      },
-      "BodyProperties": [
-        {
-          "Key": "SystemType",
-          "Value": "{SystemType}"
-        },
-        {
-          "Key": "SystemGuid",
-          "Value": "{SystemGUID}"
-        }
-      ],
-      "EventType": "DataChange.Update"
+  "CloudPlatformEvent": {
+    "CreatedTime": "{CreatedTime}",
+    "Id": "09eded4f-ccac-4b9e-a742-1dc5132542c8",
+    "CreatorId": "0f91a940-8567-4eb7-b8f5-a1f942b3fd99",
+    "CreatorType": "CloudPlatformSystem",
+    "GeneratorId": null,
+    "GeneratorType": "CloudPlatformTenant",
+    "TargetId": "0f91a940-8567-4eb7-b8f5-a1f942b3fd99",
+    "TargetType": "CloudPlatformTenant",
+    "TargetContext": null,
+    "Body": {
+      "Type": "TextualBody",
+      "Value": "{\"SystemGuid\":\"{SystemGUID}\",\"HistorySamples\":[{\"ItemName\":\"{SerialNumber}.battery.repcap\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.315+00:00\",\"Value\":\"{battery.repcap.value}\"},{\"ItemName\":\"{SerialNumber}.battery.repsoc\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.34+00:00\",\"Value\":\"{battery.repsoc.value}\"},{\"ItemName\":\"{SerialNumber}.battery.soh\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.36+00:00\",\"Value\":\"{battery.soh.value}\"},{\"ItemName\":\"{SerialNumber}.battery.fullcap\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.378+00:00\",\"Value\":\"{battery.fullcap.value}\"},{\"ItemName\":\"{SerialNumber}.battery.tte\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.395+00:00\",\"Value\":\"{battery.tte.value}\"},{\"ItemName\":\"{SerialNumber}.battery.designcap\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.411+00:00\",\"Value\":\"{battery.designcap.value}\"},{\"ItemName\":\"{SerialNumber}.battery.maxtemp\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.429+00:00\",\"Value\":\"{battery.maxtemp.value}\"},{\"ItemName\":\"{SerialNumber}.battery.mintemp\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.447+00:00\",\"Value\":\"{battery.mintemp.value}\"},{\"ItemName\":\"{SerialNumber}.battery.maxvolt\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.465+00:00\",\"Value\":\"{battery.maxvolt.value}\"},{\"ItemName\":\"{SerialNumber}.battery.minvolt\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.48+00:00\",\"Value\":\"{battery.minvolt.value}\"},{\"ItemName\":\"{SerialNumber}.battery.maxcurrent\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.505+00:00\",\"Value\":\"{battery.maxcurrent.value}\"},{\"ItemName\":\"{SerialNumber}.battery.mincurrent\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.532+00:00\",\"Value\":\"{battery.mincurrent.value}\"},{\"ItemName\":\"{SerialNumber}.battery.ttf\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.552+00:00\",\"Value\":\"{battery.ttf.value}\"},{\"ItemName\":\"{SerialNumber}.battery.fullcapnom\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.57+00:00\",\"Value\":\"{battery.fullcapnom.value}\"},{\"ItemName\":\"{SerialNumber}.battery.fullcaprep\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.588+00:00\",\"Value\":\"{battery.fullcaprep.value}\"},{\"ItemName\":\"{SerialNumber}.battery.timerh\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.607+00:00\",\"Value\":\"{battery.timerh.value}\"},{\"ItemName\":\"{SerialNumber}.battery.cyclecount\",\"Quality\":\"Good\",\"Time\":\"2018-12-05T03:58:56.626+00:00\",\"Value\":\"{battery.cyclecount.value}\"}]}",
+      "Format": "application/json"
     },
-    "AnnotationStreamIds": ","
+    "BodyProperties": [
+      {
+        "Key": "SystemType",
+        "Value": "{SystemType}"
+      },
+      {
+        "Key": "SystemGuid",
+        "Value": "{SystemGUID}"
+      }
+    ],
+    "EventType": "DataChange.Update"
   },
+  "AnnotationStreamIds": ","
+}

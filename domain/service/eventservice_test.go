@@ -53,7 +53,7 @@ const MESSAGE = `{
 func TestTestConnection(t *testing.T) {
 	queueConfig := QueueConfig{}
 	queueConfig.URL = "40.77.30.88:5672"
-	queueConfig.PublishEvent("notifications", MESSAGE)
+	queueConfig.PublishEventToRabbit("notifications", MESSAGE)
 	log.Println(queueConfig)
 	assert.NotNil(t, queueConfig.Connection)
 }

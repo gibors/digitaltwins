@@ -44,34 +44,31 @@ func (repo *Repository) AssociteDeviceToAtenant(device string, tenantId string) 
 	return true
 }
 
-func (rep *Repository) GetTenantInformation(deviceID string) dev.Tenant {
+func (rep *Repository) GetTenantInformation(tenantID string) dev.Tenant { // Get Tenant by id
 
 	url := rep.ConfigParams.EndPoints.GetTenantInfo.URL
 	method := rep.ConfigParams.EndPoints.GetTenantInfo.Method
-	url = strings.Replace(url, "{deviceID}", deviceID, 1)
+	url = strings.Replace(url, "{tenantID}", tenantID, 1)
 	req := utils.GenerateRequest(nil, url, method, rep.GlobalToken, nil)
 
-	timeout := time.Duration(10 * time.Second)
+	timeout := time.Duration(100 * time.Second)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := http.Client{Timeout: timeout, Transport: tr}
 	resp, err := client.Do(req)
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+	utils.FailOnError(err, "Error on calling get Tenant information ")
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Fatal("error getting tenant information")
+		log.Printf("Get Tenant information response: %s, ", string(resp.StatusCode))
+		log.Fatalln("Error on calling get Tenant information ")
 	}
 
 	var result = dev.Tenant{}
 	json.NewDecoder(resp.Body).Decode(&result)
-
-	log.Println(result)
 
 	return result
 }

@@ -5,7 +5,7 @@
                 "method": "POST"
             }, 
             "GetTenantInfo": {
-                "url": "https://dev.apis.caidc.honeywell.com/api/tenants/devices/{deviceID}",
+                "url": "https://dev.apis.caidc.honeywell.com/api/tenants/{tenantID}",
                 "method": "GET"
             },        
             "AssociateTenant": {
