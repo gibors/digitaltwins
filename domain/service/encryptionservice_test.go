@@ -1,16 +1,18 @@
 package service
 
 import (
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDecryptString(t *testing.T) {
-	encryptedString := "gVjhAY6mHuiDKF0dczUGIjWTd6Uf5Hw6rbipQSZTxtvTOrI6o/SJq951hOM5PsZDJ1IBhi2juVzBrl1mcnN/KniEnHJDW/dUB7vQocfzMLWxUW7DGdcoMxgbLjhAl/bI2dqB5Uwz3dFKkmhWP7Cw/RJ7h5c88N30tbB8LMr8PUOfDNTBZv9brwLHn8c+AFw0"
+	encryptedString := "Oy//9UMakumI5JhnyBMMQiWv9VzJjCAun/wiTq2XpLT3ahpyqzdsMCv1Tw6QXRPyoUbxIpX1Orw6g+BkOtlkd3rE51UeEaI4RzLD/ykXSvzUcavMMbOuDPRVuQA4RgeyXWFOotRl5JPsGwNGhLHkuT0LxIGtFFAhwPpMghi1dKk8p4LS0DsEoPtmrbRWbGy5"
 
 	value := DecryptString(encryptedString)
-
+	log.Println("decrypted value: ")
+	log.Println(value)
 	assert.NotEqual(t, "", value)
 
 }

@@ -104,8 +104,19 @@ func (s *SimulationConfig) SendEvents(serialNumber string, queue string) bool {
 	device, err := s.MongoCl.GetDeviceInserted(serialNumber)
 	utils.FailOnError(err, "Error get device from cloud db")
 
-	telemetryData := CreateTelemetryEvent(device)
-	s.QueueValues.PublishEventToRabbit(queue, telemetryData)
+	var message string
+
+	switch queue {
+	case dev.TELEMETRYQ:
+		message = CreateTelemetryEvent(device)
+
+	default:
+		message = CreateTelemetryEvent(device)
+	}
+
+	log.Printf("TelemetryMessage: %s", message)
+	log.Println("")
+	s.QueueValues.PublishEventToRabbit(queue, message)
 
 	return true
 }
