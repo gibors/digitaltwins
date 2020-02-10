@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -129,31 +130,32 @@ func CreateTelemetryEvent(d device.Device) string {
 	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{SystemType}", d.SystemType)
 	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{SerialNumber}", d.SerialNumber)
 
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.repcap.value}", string(generateRandomValue(5550, 5570)))  // reported capacity
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.repsoc.value}", string(generateRandomValue(10, 100)))     // reported state of charge
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.soh.value}", string(generateRandomValue(0, 100)))         // battery age value
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcap.value}", string(generateRandomValue(5520, 5590))) //mAh full capacity of battery at pressent
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.tte.value}", string(generateRandomValue(330000, 369090))) // tte
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.designcap.value}", string(generateRandomValue(5866, 5866)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxtemp.value}", string(generateRandomValue(31, 31)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.cyclecount.value}", string(generateRandomValue(30, 100)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.timerh.value}", string(generateRandomValue(19066400, 19086400)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.mintemp.value}", string(generateRandomValue(22, 22)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.minvolt.value}", string(generateRandomValue(3, 3)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxvolt.value}", string(generateRandomValue(4, 4)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxcurrent.value}", string(generateRandomValue(2, 4)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.mincurrent.value}", string(generateRandomValue(-1, 1)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.ttf.value}", string(generateRandomValue(5550, 5570)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcapnom.value}", string(generateRandomValue(366634, 369634)))
-	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcaprep.value}", string(generateRandomValue(5548, 5588)))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.repcap.value}", strconv.FormatInt(generateRandomValue(5550, 5570), 10))  // reported capacity
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.repsoc.value}", strconv.FormatInt(generateRandomValue(10, 100), 10))     // reported state of charge
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.soh.value}", strconv.FormatInt(generateRandomValue(0, 100), 10))         // battery age value
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcap.value}", strconv.FormatInt(generateRandomValue(5520, 5590), 10)) //mAh full capacity of battery at pressent
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.tte.value}", strconv.FormatInt(generateRandomValue(330000, 369090), 10)) // tte
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.designcap.value}", strconv.FormatInt(generateRandomValue(5866, 5866), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxtemp.value}", strconv.FormatInt(generateRandomValue(31, 31), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.cyclecount.value}", strconv.FormatInt(generateRandomValue(30, 100), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.timerh.value}", strconv.FormatInt(generateRandomValue(19066400, 19086400), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.mintemp.value}", strconv.FormatInt(generateRandomValue(22, 22), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.minvolt.value}", strconv.FormatInt(generateRandomValue(3, 3), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxvolt.value}", strconv.FormatInt(generateRandomValue(4, 4), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.maxcurrent.value}", strconv.FormatInt(generateRandomValue(2, 4), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.mincurrent.value}", strconv.FormatInt(generateRandomValue(-1, 1), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.ttf.value}", strconv.FormatInt(generateRandomValue(5550, 5570), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcapnom.value}", strconv.FormatInt(generateRandomValue(366634, 369634), 10))
+	telemetryEvent = strings.ReplaceAll(telemetryEvent, "{battery.fullcaprep.value}", strconv.FormatInt(generateRandomValue(5548, 5588), 10))
 
 	return telemetryEvent
 }
 
-func generateRandomValue(start int, end int) int {
+func generateRandomValue(start int, end int) int64 {
 	if end < start {
 		log.Fatal("start should be less than end ")
 	}
 	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(end-start+1) + start
+	number := rand.Intn(end-start+1) + start
+	return int64(number)
 }

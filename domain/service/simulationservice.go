@@ -26,8 +26,11 @@ type SimulationConfig struct {
 
 func (s *SimulationConfig) InitSimulation(conf config.Configuration, tenantID string) {
 	DMSTRING := os.Getenv("DbConnectionString_DM")
+	log.Println(">>> Encrypted DM string : ")
+	log.Println(DMSTRING)
 	DMSTRING = DecryptString(DMSTRING)
-
+	log.Println(">>> DM local string conn: ")
+	log.Println(DMSTRING)
 	s.MongoCl = repository.MongoClient{}
 
 	//Get Global Token

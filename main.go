@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -47,7 +48,7 @@ func main() {
 
 		for k := 0; k < int(numOfDevices); k++ {
 
-			completed, err := simulate.OnboardDeviceOnPremise(model, device.MOBILECOMPUTER)
+			completed, err := simulate.OnboardDeviceOnPremise(strings.ToUpper(model), device.MOBILECOMPUTER)
 
 			utils.FailOnError(err, "Failed when creating simulated divice")
 			log.Printf("Device created Succesfully:  %t", completed)
@@ -60,7 +61,7 @@ func main() {
 		serialNumber := os.Args[2]
 		eventName := os.Args[3]
 		numOfEvents, err := strconv.ParseInt(os.Args[4], 10, 64)
-		utils.FailOnError(err, "Number of events should be int ")
+		utils.FailOnError(err, "Number of events should be integer ")
 
 		log.Println("Calling function to send events.. >>")
 
