@@ -5,19 +5,58 @@ import (
 	device "caidc_auto_devicetwins/domain/model"
 	"caidc_auto_devicetwins/domain/service"
 	"caidc_auto_devicetwins/domain/utils"
+	pb "caidc_auto_devicetwins/simulator"
+	"context"
 	"log"
+	"net"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const REQUIRED_PARAMS = "Required parameters Device Createtion simulator: caidc_auto_device_twins {tenantId} {model} {numberOfDevices} /n" +
 	"Device events simulation: caidc_auto_device_twins {tenantId} {serialNumber} {queue_event_name} {numberOfEvents}"
+const (
+	port = ":50051"
+)
+
+type deviceTwinServer struct {
+	pb.UnimplementedDeviceTwinServiceServer
+}
+
+func (s *deviceTwinServer) CreateDeviceSimulated(ctx context.Context, in *pb.DevicesCreationRequest) (*pb.DeviceSimulationResponse, error) {
+
+	succed := &wrappers.BoolValue{Value: true}
+	message := &wrappers.StringValue{Value: "Successfully created device(s)"}
+	log.Printf("Received tenantId: %v", in.GetTenantId())
+	return &pb.DeviceSimulationResponse{SimulationSucced: succed, DetailedMessage: message}, nil
+}
+
+func (s *deviceTwinServer) SendDataToDevice(ctx context.Context, in *pb.DevicesDataSimulationRequest) (*pb.DeviceSimulationResponse, error) {
+	succed := &wrappers.BoolValue{Value: true}
+	message := &wrappers.StringValue{Value: "Successfully created device(s)"}
+	log.Printf("Received tenantId: %v", in.GetTenantId())
+	return &pb.DeviceSimulationResponse{SimulationSucced: succed, DetailedMessage: message}, nil
+}
 
 func main() {
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	deviceSimulatorServer := deviceTwinServer{}
+	pb.RegisterDeviceTwinServiceServer(s, &deviceSimulatorServer)
+	err = s.Serve(lis)
+	utils.FailOnError(err, "failed to serve: %v")
+}
 
+func simulation() {
 	var tenantID string
 
 	if len(os.Args) < 2 {
@@ -57,7 +96,6 @@ func main() {
 		log.Println(">>> Device creation simulation completed sucessfully >> ")
 
 	} else if len(os.Args) == 5 {
-
 		serialNumber := os.Args[2]
 		eventName := os.Args[3]
 		numOfEvents, err := strconv.ParseInt(os.Args[4], 10, 64)
@@ -68,7 +106,6 @@ func main() {
 		for i := 0; i < int(numOfEvents); i++ {
 			simulate.SendEvents(serialNumber, eventName)
 		}
-
 	} else {
 		log.Fatal(REQUIRED_PARAMS)
 	}

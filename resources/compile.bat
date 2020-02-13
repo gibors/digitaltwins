@@ -1,0 +1,1 @@
+protoc -I resources/ simulator.proto --go_out=plugins=grpc:devicetwinservice
