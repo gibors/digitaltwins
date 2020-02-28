@@ -13,6 +13,7 @@ type Tenant struct {
 	Organization string             `json:"organization"`
 	Location     string             `json:"location"`
 	Issuer       string             `json:"issuer"`
+	Endpoint     string             `json:"endpoint"`
 	Audience     string             `json:"audience"`
 	Properties   []Property         `json:"properties"`
 	CreatedDate  time.Time          `json:"createdDate"`

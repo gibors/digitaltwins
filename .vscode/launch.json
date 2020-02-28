@@ -6,6 +6,10 @@
     "configurations": [
 
 
+
+    
+
+
     
         {
             "type": "draft",
@@ -43,8 +47,8 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {},
-            // "args": ["5e3c5a05a1380d0006906639","CT60", "1"]
-            "args": ["5e3c5a05a1380d0006906639","EDA50MAUTJRVVW1", "telemetry" "1"]            
+            "args":[]
+            // "args": ["ct60", "1"]            
         }
     ]
 }

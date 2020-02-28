@@ -13,6 +13,7 @@ import (
 const GDEVICEAPP = "GDEVICEAPP"
 const DEVICEAPP = "DEVICEAPP"
 const BROKERAPP = "BROKER-RABBITMQ"
+const BROKERIOTHUB = "BROKER-IOTHUB"
 
 func (r *Repository) GetGlobalToken(signature string, deviceID string) string {
 	return r.GetToken(GDEVICEAPP, signature, deviceID, nil)
@@ -27,6 +28,10 @@ func (r *Repository) GetQueueToken(queueEndpoint string) string {
 	var api *string
 	api = &queueEndpoint
 	return r.GetToken(BROKERAPP, r.TenantToken, empty, api)
+}
+
+func (r *Repository) GetIotHubToken(deviceID string) string {
+	return r.GetToken(BROKERIOTHUB, r.TenantToken, deviceID, nil)
 }
 
 func (r *Repository) GetToken(clientType string, accessToken string, deviceID string, urlAuth *string) string {
@@ -65,6 +70,8 @@ func (r *Repository) GetToken(clientType string, accessToken string, deviceID st
 	var result map[string]interface{}
 
 	json.NewDecoder(resp.Body).Decode(&result)
+
+	r.Username = result["userName"].(string)
 
 	return result["accessToken"].(string)
 }

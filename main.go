@@ -6,107 +6,123 @@ import (
 	"caidc_auto_devicetwins/domain/service"
 	"caidc_auto_devicetwins/domain/utils"
 	pb "caidc_auto_devicetwins/simulator"
-	"context"
+	"errors"
+	"flag"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"strconv"
 	"strings"
 
+	"golang.org/x/net/context"
+
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const REQUIRED_PARAMS = "Required parameters Device Createtion simulator: caidc_auto_device_twins {tenantId} {model} {numberOfDevices} /n" +
 	"Device events simulation: caidc_auto_device_twins {tenantId} {serialNumber} {queue_event_name} {numberOfEvents}"
-const (
-	port = ":50051"
-)
 
-type deviceTwinServer struct {
-	pb.UnimplementedDeviceTwinServiceServer
+type Server struct {
 }
 
-func (s *deviceTwinServer) CreateDeviceSimulated(ctx context.Context, in *pb.DevicesCreationRequest) (*pb.DeviceSimulationResponse, error) {
+var port = flag.Int("port", 50059, "The server port")
 
-	succed := &wrappers.BoolValue{Value: true}
-	message := &wrappers.StringValue{Value: "Successfully created device(s)"}
-	log.Printf("Received tenantId: %v", in.GetTenantId())
-	return &pb.DeviceSimulationResponse{SimulationSucced: succed, DetailedMessage: message}, nil
-}
+func (s *Server) CreateDeviceSimulated(ctx context.Context, request *pb.DevicesCreationRequest) (*pb.DeviceSimulationResponse, error) {
 
-func (s *deviceTwinServer) SendDataToDevice(ctx context.Context, in *pb.DevicesDataSimulationRequest) (*pb.DeviceSimulationResponse, error) {
-	succed := &wrappers.BoolValue{Value: true}
-	message := &wrappers.StringValue{Value: "Successfully created device(s)"}
-	log.Printf("Received tenantId: %v", in.GetTenantId())
-	return &pb.DeviceSimulationResponse{SimulationSucced: succed, DetailedMessage: message}, nil
-}
-
-func main() {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+	if request.GetTenantId() == nil || request.GetModel() == nil || request.GetNumberDevices() <= 0 {
+		utils.FailOnError(errors.New(" Bad Request: "), REQUIRED_PARAMS)
 	}
-	s := grpc.NewServer()
-	deviceSimulatorServer := deviceTwinServer{}
-	pb.RegisterDeviceTwinServiceServer(s, &deviceSimulatorServer)
-	err = s.Serve(lis)
-	utils.FailOnError(err, "failed to serve: %v")
-}
 
-func simulation() {
-	var tenantID string
-
-	if len(os.Args) < 2 {
-		log.Fatal(REQUIRED_PARAMS)
-	}
-	log.Println(os.Args)
-
-	tenantID = os.Args[1]
-
-	_, err := primitive.ObjectIDFromHex(tenantID)
-	utils.FailOnError(err, "Tenant id format is incorrect")
+	tenantID := request.GetTenantId().Value
+	model := request.GetModel().Value
+	numOfDevices := request.GetNumberDevices()
 
 	simulate := service.SimulationConfig{}
 	values := config.GetConfigValues()
 
-	simulate.InitSimulation(values, tenantID) // configuration to start simulation
+	simulate.InitSimulation(values, tenantID)
+	for k := 0; k < int(numOfDevices); k++ {
 
-	log.Println("Configuration file read sucessfully >>> ")
-
-	if len(os.Args) == 4 {
-
-		log.Println(">>> Device creation simulation started.. ")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-		model := os.Args[2]
-		numOfDevices, err := strconv.ParseInt(os.Args[3], 10, 64)
-		utils.FailOnError(err, " num of devices should be integer")
-
-		for k := 0; k < int(numOfDevices); k++ {
-
-			completed, err := simulate.OnboardDeviceOnPremise(strings.ToUpper(model), device.MOBILECOMPUTER)
-
-			utils.FailOnError(err, "Failed when creating simulated divice")
-			log.Printf("Device created Succesfully:  %t", completed)
-		}
-		log.Println(" ")
-		log.Println(">>> Device creation simulation completed sucessfully >> ")
-
-	} else if len(os.Args) == 5 {
-		serialNumber := os.Args[2]
-		eventName := os.Args[3]
-		numOfEvents, err := strconv.ParseInt(os.Args[4], 10, 64)
-		utils.FailOnError(err, "Number of events should be integer ")
-
-		log.Println("Calling function to send events.. >>")
-
-		for i := 0; i < int(numOfEvents); i++ {
-			simulate.SendEvents(serialNumber, eventName)
-		}
-	} else {
-		log.Fatal(REQUIRED_PARAMS)
+		completed, err := simulate.OnboardDeviceOnPremise(strings.ToUpper(model), device.MOBILECOMPUTER)
+		utils.FailOnError(err, "Failed when creating simulated divice")
+		log.Printf("Device created Succesfully:  %t", completed)
 	}
+	log.Println(" ")
+	log.Println(">>> Device creation simulation completed sucessfully >> ")
+
+	succed := &wrappers.BoolValue{Value: true}
+	message := &wrappers.StringValue{Value: "Successfully created device(s)"}
+	log.Printf("Received tenantId: %v", request.GetTenantId())
+	return &pb.DeviceSimulationResponse{SimulationSucced: succed, DetailedMessage: message}, nil
+}
+
+func (s *Server) SendDataToDevice(ctx context.Context, request *pb.DevicesDataSimulationRequest) (*pb.DeviceSimulationResponse, error) {
+
+	if request.GetTenantId() == nil || request.GetSerialNumber() == nil || request.GetNumberEvents() <= 0 {
+		utils.FailOnError(errors.New(" Bad Request: "), REQUIRED_PARAMS)
+	}
+
+	tenantID := request.GetTenantId().Value
+	serial := request.GetSerialNumber().Value
+	numOfEvents := request.GetNumberEvents()
+
+	var event string
+	if request.GetEventType() == nil {
+		event = "telemetry"
+	} else {
+		event = request.GetEventType().Value
+	}
+
+	simulate := service.SimulationConfig{}
+	values := config.GetConfigValues()
+
+	simulate.InitSimulation(values, tenantID)
+
+	for i := 0; i < int(numOfEvents); i++ {
+		simulate.SendEvents(serial, event)
+	}
+
+	succed := &wrappers.BoolValue{Value: true}
+	message := &wrappers.StringValue{Value: "Successfully created device(s)"}
+	log.Printf("Received tenantId: %v", request.GetTenantId())
+	return &pb.DeviceSimulationResponse{SimulationSucced: succed, DetailedMessage: message}, nil
+}
+
+func main() {
+	if len(os.Args) == 3 {
+		model := os.Args[1]
+		numberOfDevices, err := strconv.Atoi(os.Args[2])
+		utils.FailOnError(err, "Number of devices should be integer")
+
+		simulate := service.SimulationConfig{}
+		values := config.GetConfigValues()
+		simulate.InitSimulation(values, "")
+
+		for i := 0; i < numberOfDevices; i++ {
+			device := simulate.OnboarDeviceToForge(strings.ToUpper(model), device.MOBILECOMPUTER)
+			if device.SystemGUID == "" {
+				log.Fatal("Failed to onboard , please try again ")
+			}
+			log.Printf("sucessfully created %s", device.SystemGUID)
+			log.Println("")
+		}
+
+	} else {
+		lis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *port))
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+
+		s := grpc.NewServer()
+		pb.RegisterDeviceTwinServer(s, &Server{})
+		log.Println(fmt.Sprintf(" Server started port:%d", *port))
+		err = s.Serve(lis)
+		utils.FailOnError(err, "failed to serve: %v")
+	}
+}
+
+func simulateSentienceTenant() {
+
 }

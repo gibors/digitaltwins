@@ -17,6 +17,10 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type Broker interface {
+	Connect() bool
+	Publish() bool
+}
 type QueueConfig struct {
 	Key        string
 	Connection *amqp.Connection
@@ -31,11 +35,11 @@ func (q *QueueConfig) CreateQueConnection(queName string) {
 	connString := fmt.Sprintf("amqp://:%s@%s/", q.Token, q.URL)
 	log.Println(connString)
 	conn, err := amqp.Dial(connString)
-	failOnError(err, "Failed to connect to RabbitMQ")
+	utils.FailOnError(err, "Failed to connect to RabbitMQ")
 	q.Connection = conn
 
 	ch, err := q.Connection.Channel()
-	failOnError(err, "Failed to open a channel")
+	utils.FailOnError(err, "Failed to open a channel")
 	q.Channel = ch
 	q.Name = queName
 }
@@ -61,7 +65,7 @@ func (q *QueueConfig) PublishEventToRabbit(eventType string, message string) {
 			ContentType: "text/plain",
 			Body:        []byte(message),
 		})
-	failOnError(err, "Failed to publish a message")
+	utils.FailOnError(err, "Failed to publish a message")
 	q.CloseConnection()
 }
 
@@ -69,34 +73,12 @@ func (q *QueueConfig) SubscribeToQueue(eventType string) {
 	q.CreateQueConnection(eventType)
 }
 
-func (q *QueueConfig) TestConnection(queueName string) {
-	q.CreateQueConnection(queueName)
-	body := "Hello World!!!!!"
-	err := q.Channel.Publish(
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(body),
-		})
-	failOnError(err, "Failed to publish a message")
-	q.CloseConnection()
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
-
 func CreateDeviceMessageEvent(dev device.Device, eventMessageType string) string {
 
 	filePath := "./resources/" + eventMessageType + ".json"
 	jsonFile, err := os.Open(filePath)
 
-	failOnError(err, "Failed to open json file")
+	utils.FailOnError(err, "Failed to open json file")
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -121,7 +103,7 @@ func CreateTelemetryEvent(d device.Device) string {
 	filePath := "./resources/telemetrymessage.json"
 	jsonFile, err := os.Open(filePath)
 
-	failOnError(err, "Failed to open json file")
+	utils.FailOnError(err, "Failed to open json file")
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	telemetryEvent := string(byteValue)

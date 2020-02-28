@@ -19,6 +19,7 @@ type Repository struct {
 	GlobalToken  string
 	TenantToken  string
 	QueueToken   string
+	Username     string
 }
 
 func (r *Repository) OnboardDevice(dev device.Device) bool {

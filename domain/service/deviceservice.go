@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	device "caidc_auto_devicetwins/domain/model"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -43,10 +44,32 @@ func CreateDevice(model string, deviceType string) device.Device {
 	return device
 }
 
+func CreateDeviceFromDeviceToRegister(deviceTR device.DeviceToRegister, model string, dtype string) device.Device {
+
+	var device = device.Device{
+		Model:      model,
+		Type:       dtype,
+		SystemType: "opintel",
+	}
+
+	device.SystemID = deviceTR.DeviceID
+	device.SerialNumber = deviceTR.DeviceOwnershipCode
+	device.PublicKey = deviceTR.PublicKey
+	device.Name = device.SerialNumber
+
+	return device
+}
+
 func generateRandomId(length int) string {
 	b := make([]byte, length)
 	for i := range b {
 		b[i] = CHARSET[seededRand.Intn(len(CHARSET))]
 	}
 	return string(b)
+}
+
+func GenerateKeys(deviceID string) (string, string) {
+	log.Println("Generating keys...")
+
+	return "", ""
 }

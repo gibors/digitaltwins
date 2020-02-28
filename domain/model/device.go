@@ -41,7 +41,6 @@ type Device struct {
 	RegistrationDatetime      *string             `bson:"registrationDatetime" json:"registrationDatetime"`
 	DiscontinuedDatetime      *string             `bson:"discontinuedDatetime" json:"discontinuedDatetime"`
 	ProvisioningDatetime      *string             `bson:"provisioningDatetime" json:"provisioningDatetime"`
-	Updates                   *[]string           `bson:"updates"`
 	Hierarchy                 *string             `bson:"hierarchy"`
 	AppsDetails               *[]string           `bson:"appsDetails" json:"appsDetails"`
 	CreatredOnDate            time.Time           `bson:"-"`
@@ -51,6 +50,18 @@ type Device struct {
 	SystemType                string              `bson:"-"`
 }
 
+type DeviceToRegister struct {
+	DeviceID            string  `bson:"DeviceId" json:"DeviceId"`
+	DeviceOwnershipCode string  `bson:"DeviceOwnershipCode" json:"DeviceOwnershipCode"`
+	DeviceType          string  `bson:"DeviceType" json:"DeviceType"`
+	PublicKey           string  `bson:"PublicKey" json:"PublicKey"`
+	VaultURL            string  `bson:"VaultUrl" json:"VaultUrl"`
+	Status              int32   `bson:"Status" json:"Status"`
+	OrgID               string  `bson:"OrgId" json:"OrgId"`
+	SystemGUID          *string `bson:"SystemGuid" json:"SystemGuid"`
+}
+
+//	// Updates                   *[]string           `bson:"updates"`
 const (
 	GATEWAY        = "gateway"
 	PRINTER        = "printer"

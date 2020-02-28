@@ -1,16 +1,17 @@
-
 syntax = "proto3";
 
-//import "google/protobuf/timestamp.proto";
-//import "google/protobuf/any.proto";
+package simulator;
+option go_package = "simulator";
+
 import "google/protobuf/wrappers.proto";
+
 
 //-------------------------------- Message Definitions ----------------------------------------------//
 
 message DevicesCreationRequest {
     google.protobuf.StringValue tenant_id = 1;
     google.protobuf.StringValue model = 2;
-    google.protobuf.StringValue number_devices = 3;
+    int32 number_devices = 3;
 
 }
 
@@ -18,7 +19,7 @@ message DevicesDataSimulationRequest {
     google.protobuf.StringValue tenant_id = 1;
     google.protobuf.StringValue serial_number = 2;
     google.protobuf.StringValue event_type = 3;
-    google.protobuf.StringValue number_devices = 4;
+    int32 number_events = 4;
 
 }
 message DeviceSimulationResponse {
@@ -28,9 +29,9 @@ message DeviceSimulationResponse {
 
 //----------------------------------------
 
-service DeviceTwinService {
-    rpc CreateDeviceSimulated (DevicesCreationRequest) returns (DeviceSimulationResponse) {
+service deviceTwin {
+    rpc CreateDeviceSimulated(DevicesCreationRequest) returns (DeviceSimulationResponse) {
     }
-    rpc SendDataToDevice(DevicesCreationRequest) returns (DeviceSimulationResponse) {
+    rpc SendDataToDevice(DevicesDataSimulationRequest) returns (DeviceSimulationResponse) {
     }
 }
