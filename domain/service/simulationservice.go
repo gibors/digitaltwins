@@ -53,6 +53,9 @@ func (s *SimulationConfig) InitSimulation(conf config.Configuration, tenantID st
 			log.Println(">>> DM local string conn: ")
 			log.Println(DMSTRING)
 			s.MongoCl = repository.MongoClient{}
+			s.MongoCl.ClientLocal, clientError = repository.GetMongoClient(dmConnectionString)
+			utils.FailOnError(clientError, "Error when creating Local mongodb client")
+			s.MongoCl.DMCollectionLocal = s.MongoCl.ClientLocal.Database("devicemanagement").Collection("devices")
 
 			authAPI := apiEndpoint.Value + "/api/auth"
 			s.QueueConf.Token = s.RepoValue.GetQueueToken(authAPI)
@@ -87,8 +90,9 @@ func (s *SimulationConfig) OnboardDeviceOnPremise(model string, dtype string) (b
 		WaitCall()
 		log.Println("Device successfully associated to Tenant >>> ")
 
-		systemGUID = s.GetDeviceInserted(device)
-
+		devInserted, err := s.MongoCl.GetDeviceInserteOnPrem(device.SerialNumber)
+		utils.FailOnError(err, "Failed getting device from onprem DB")
+		systemGUID = devInserted.SystemGUID
 		log.Printf("systemGUID of inserted device: %s", systemGUID)
 
 		device.SystemGUID = systemGUID
@@ -120,7 +124,7 @@ func (s *SimulationConfig) OnboarDeviceToForge(model string, dtype string) devic
 	onboardingSucced := s.RepoValue.OnboardDevice(device)
 
 	WaitCall()
-	if onboardingSucced {
+	if onboardingSucced && s.TenantInfo.Endpoint != "MQTT-RabbitMQ" {
 		var err error
 		log.Println("Getting device onboarded from DB... >>> ")
 
