@@ -24,6 +24,8 @@ import (
 const REQUIRED_PARAMS = "Required parameters Device Createtion simulator: caidc_auto_device_twins {tenantId} {model} {numberOfDevices} /n" +
 	"Device events simulation: caidc_auto_device_twins {tenantId} {serialNumber} {queue_event_name} {numberOfEvents}"
 
+const ENV = "local"
+
 type Server struct {
 }
 
@@ -40,7 +42,7 @@ func (s *Server) CreateDeviceSimulated(ctx context.Context, request *pb.DevicesC
 	numOfDevices := request.GetNumberDevices()
 
 	simulate := service.SimulationConfig{}
-	values := config.GetConfigValues()
+	values := config.GetConfigValues(ENV)
 
 	simulate.InitSimulation(values, tenantID)
 	for k := 0; k < int(numOfDevices); k++ {
@@ -76,7 +78,7 @@ func (s *Server) SendDataToDevice(ctx context.Context, request *pb.DevicesDataSi
 	}
 
 	simulate := service.SimulationConfig{}
-	values := config.GetConfigValues()
+	values := config.GetConfigValues(ENV)
 
 	simulate.InitSimulation(values, tenantID)
 
@@ -91,17 +93,22 @@ func (s *Server) SendDataToDevice(ctx context.Context, request *pb.DevicesDataSi
 }
 
 func main() {
-	if len(os.Args) == 3 {
+	if len(os.Args) == 4 { // Onboarding for devices DeviceToRegister (Automation Flow)
 		model := os.Args[1]
 		numberOfDevices, err := strconv.Atoi(os.Args[2])
 		utils.FailOnError(err, "Number of devices should be integer")
-
+		env := os.Args[3]
 		simulate := service.SimulationConfig{}
-		values := config.GetConfigValues()
+		values := config.GetConfigValues(env)
 		simulate.InitSimulation(values, "")
-
+		var deviceType string
+		if strings.ToLower(model) == "hcc" {
+			deviceType = device.GATEWAY
+		} else {
+			deviceType = device.MOBILECOMPUTER
+		}
 		for i := 0; i < numberOfDevices; i++ {
-			device := simulate.OnboarDeviceToForge(strings.ToUpper(model), device.MOBILECOMPUTER)
+			device := simulate.OnboarDeviceToForge(strings.ToUpper(model), deviceType)
 			if device.SystemGUID == "" {
 				log.Fatal("Failed to onboard , please try again ")
 			}
@@ -109,7 +116,7 @@ func main() {
 			log.Println("")
 		}
 
-	} else {
+	} else { // Start GRPC Server
 		lis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *port))
 		if err != nil {
 			log.Fatalf("failed to listen: %v", err)
@@ -117,6 +124,7 @@ func main() {
 
 		s := grpc.NewServer()
 		pb.RegisterDeviceTwinServer(s, &Server{})
+
 		log.Println(fmt.Sprintf(" Server started port:%d", *port))
 		err = s.Serve(lis)
 		utils.FailOnError(err, "failed to serve: %v")

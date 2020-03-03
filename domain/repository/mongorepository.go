@@ -40,6 +40,16 @@ func (c *MongoClient) GetDeviceInserted(serialNumber string) (dev.Device, error)
 	return device, nil
 }
 
+func (c *MongoClient) GetDeviceInserteOnPrem(serialNumber string) (dev.Device, error) {
+	filter := bson.D{{"serialNumber", serialNumber}}
+	var device = dev.Device{}
+	err := c.DMCollectionLocal.FindOne(context.TODO(), filter).Decode(&device)
+	if err != nil {
+		return device, err
+	}
+	return device, nil
+}
+
 func (c *MongoClient) InsertDevice(newDevice dev.Device) (bool, error) {
 
 	insertResult, err := c.DMCollectionLocal.InsertOne(context.TODO(), newDevice)

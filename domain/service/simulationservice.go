@@ -54,12 +54,11 @@ func (s *SimulationConfig) InitSimulation(conf config.Configuration, tenantID st
 			log.Println(DMSTRING)
 			s.MongoCl = repository.MongoClient{}
 
-			s.MongoCl.ClientLocal, clientError = repository.GetMongoClient(dmConnectionString)
-			utils.FailOnError(clientError, "Error when creating Local mongodb client")
-			s.MongoCl.DMCollectionLocal = s.MongoCl.ClientLocal.Database("devicemanagement").Collection("devices")
 			authAPI := apiEndpoint.Value + "/api/auth"
 			s.QueueConf.Token = s.RepoValue.GetQueueToken(authAPI)
 			s.QueueConf.URL = queueEndpoint.Value
+			s.RepoValue.ConfigParams.EndPoints.OnboardDeviceGateway.URL = apiEndpoint.Value + "/api/deviceonboarding/cloudgateway"
+			s.RepoValue.ConfigParams.EndPoints.OnboardDeviceMobile.URL = apiEndpoint.Value + "/api/deviceonboarding/mobilecomputers"
 
 			log.Println(s.QueueConf.Token)
 		} else if s.TenantInfo.Endpoint == "IotHub" {
@@ -67,7 +66,7 @@ func (s *SimulationConfig) InitSimulation(conf config.Configuration, tenantID st
 			s.MqttConf.endpoint = queueEndpoint.Value
 		}
 	}
-	s.MongoCl.ClientAut, clientError = repository.GetMongoClient(AUTDMSTRING)
+	s.MongoCl.ClientAut, clientError = repository.GetMongoClient(s.RepoValue.ConfigParams.EndPoints.DbConnectionString.URL)
 	utils.FailOnError(clientError, "Error when creating cloud mongodb client")
 	s.MongoCl.DMCollectionAut = s.MongoCl.ClientAut.Database("devicemanagement").Collection("devices")
 
@@ -88,7 +87,7 @@ func (s *SimulationConfig) OnboardDeviceOnPremise(model string, dtype string) (b
 		WaitCall()
 		log.Println("Device successfully associated to Tenant >>> ")
 
-		systemGUID = s.insertDeviceFromDev(device)
+		systemGUID = s.GetDeviceInserted(device)
 
 		log.Printf("systemGUID of inserted device: %s", systemGUID)
 
@@ -98,7 +97,6 @@ func (s *SimulationConfig) OnboardDeviceOnPremise(model string, dtype string) (b
 		log.Printf(" Event: %s ", newConnectionEvent)
 		log.Println(" ")
 		s.QueueConf.PublishEventToRabbit("device", newConnectionEvent) // new connection event after onboarding successfully
-
 		return true, nil
 	}
 	log.Fatalf("Device onbaording failed.. %s", device.SerialNumber)

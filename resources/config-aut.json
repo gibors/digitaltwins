@@ -1,0 +1,38 @@
+{
+    "Endpoints": {
+            "AuthApi": { 
+                "url": "https://automation.apis.caidc.honeywell.com/api/auth",
+                "method": "POST"
+            }, 
+            "GetTenantInfo": {
+                "url": "https://automation.apis.caidc.honeywell.com/api/tenants/{tenantID}",
+                "method": "GET"
+            },        
+            "AssociateTenant": {
+                "url":"https://automation.apis.caidc.honeywell.com/api/tenants/{tenantID}/devices/{deviceID}",
+                "method": "PUT"
+            },            
+            "OnboardDeviceMobile": {
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/mobilecomputers",
+                "method": "POST"
+            },
+            "OnboardingToken": {
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/token",
+                "method": "POST"
+            },                
+            "OnboardDeviceGateway": {
+                "url": "https://automation.apis.caidc.honeywell.com/api/deviceonboarding/cloudgateway",
+                "method": "POST"
+            },
+            "DbConnectionString": {
+                "url": "mongodb://dmdbadmin:Honeywe!!Up!nThe$ky786@caidcautdb001.westus.cloudapp.azure.com:47017/devicemanagement?readPreference=primary",
+                "method": ""
+            }
+        } ,
+        "ApiKey":"apikey=IUcT24epDTAEuhYbqRE1O4l1GIKw8rC6",
+        "TokenDetails": {
+            "TokenId":"a7c2ce41-c225-48ff-86b9-ca07510f7a3a",
+            "JWTToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InByYW5lZXNoa3VtYXIueWFkYXZAaG9uZXl3ZWxsLmNvbSIsImlhdCI6MTU4MjI3MTU4MSwibmFtZWlkIjoiNWIzNjY2YmViMTM1ZDYxZDJjZDUzMmY0IiwiZ2l2ZW5fbmFtZSI6IlByYW5lZXNoLEt1bWFyIFlhZGF2IiwibmJmIjoxNTgyMjcxNTgxLCJleHAiOjE1ODQ4NjM1ODEsImlzcyI6IkhvbmV5d2VsbCBEZXYgQ29ubmVjdGVkIEFJREMiLCJhdWQiOiJodHRwczovL2FwaXMuZGV2LmNhaWRjLmhvbmV5d2VsbC5jb20iLCJzY29wZSI6WyJvbmJvYXJkaW5nLmNhaWRjLmhvbmV5d2VsbC5jb20iXSwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjp7IjViMzA5NzExMDAxZjBjM2ZkMGZmOGRjZiI6WyI1YjMwOGEzY2Y0MTYyNDIwZTQ5YTc2OTQiXX19.jSlD2eesRHxFiTWr5gI-5L5KNEDROtbOtJ499zWXviY",
+            "TokenHash" : "yTBd1+bV0CALWbK7F6W5QGtZdiwsbT/YFcAzrADzzbw0FZAF5MKYWd5V+vG4hfyjtySPMsZFEO768QiZLlJgQjqK3APxTSg6Up5udT6Yd3afA+PKQ9lz5vtZDS+j0BrbvhSy29et59GwbpC20IVenZsObbH3IeNlnbTDhg82+S+nPHalB+IP26IzY8vuANpCtcFiGu4ssOa90sGDE+ezp9HpxLhpszncDRag9nnukQkRPgd/PlDNQcPk6teieZYWg7jW1jYZLy/xh7PBLfvRNrO/Duu8iAICoZgcm5+m6eeRAuQ/s3LO/Abme+4AP5M1Vaytl/q9rU4kX2bFGi+gPDbItvoqRYjNnsu/89kGcOz1MjwIzdBM3cyey3EbJF9KzvM1tRqYoGKCc3+AmKZFogxmHZAwoaqd8nL7yKvJupstuL/g7CS3tupvHLjq/ejTaFNPN4cNhtJaTSJpGj7bELWZbZjcZvRonfPB1SbZ4J16+8r17EgBLseWXFWmxGeSU4hj2dtz3vozO158n5xodYnjDTkLxhp4dM5JntyxHCbL/AhcO6AHUgkBJ9tiN7GQbHtyeqgg1Q20iz7UYY1WDOsWc4q/R0akO0r332fgT9fV4YmRGyXHS249u8TTdxYfUW6Wg4FzghUd4X9ZGO285ZFN6MKaN3jsOFhiXo0L5UU="
+        }            
+}
