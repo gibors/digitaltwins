@@ -110,7 +110,7 @@ func main() {
 		for i := 0; i < numberOfDevices; i++ {
 			device := simulate.OnboarDeviceToForge(strings.ToUpper(model), deviceType)
 			if device.SystemGUID == "" {
-				log.Fatal("Failed to onboard , please try again ")
+				log.Print("Failed to onboard , please try again ")
 			}
 			log.Printf("sucessfully created %s", device.SystemGUID)
 			log.Println("")

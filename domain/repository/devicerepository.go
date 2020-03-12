@@ -24,12 +24,12 @@ type Repository struct {
 
 func (r *Repository) OnboardDevice(dev device.Device) bool {
 
-	tokenDetails := utils.GetTokenDetails()
-	log.Println("token details: ")
-	log.Println(tokenDetails)
+	// tokenDetails := utils.GetTokenDetails()
+	// log.Println("token details: ")
+	// log.Println(tokenDetails)
 	requestBody := map[string]interface{}{
-		"QRCodeHash": tokenDetails.TokenDetails.TokenHash,
-		"TokenId":    tokenDetails.TokenDetails.TokenID,
+		"QRCodeHash": r.ConfigParams.TokenDetails.TokenHash,
+		"TokenId":    r.ConfigParams.TokenDetails.TokenID,
 		"RegistrationDetails": map[string]string{
 			"Ownershipcode": dev.SerialNumber,
 			"PublicKey":     dev.PublicKey,
@@ -49,9 +49,10 @@ func (r *Repository) OnboardDevice(dev device.Device) bool {
 		url = r.ConfigParams.EndPoints.OnboardDeviceMobile.URL
 	}
 
-	req := utils.GenerateRequest(nil, url, method, tokenDetails.TokenDetails.JWTToken, reqBody)
+	req := utils.GenerateRequest(nil, url, method, r.ConfigParams.TokenDetails.JWTToken, reqBody)
 
-	timeout := time.Duration(200 * time.Second)
+	timeout := time.Duration(500 * time.Second)
+
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

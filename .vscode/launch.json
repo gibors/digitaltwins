@@ -6,13 +6,18 @@
     "configurations": [
 
 
+
+
+
+
+
     {
         "name": "Launch file",
         "type": "go",
         "request": "launch",
         "mode": "debug",
         "program": "${file}",
-        "args": ["ct60", "1", "local"]     
+        "args": ["ct60", "5", "aut"]     
 
     },
         {
@@ -29,7 +34,7 @@
                 "host": "127.0.0.1",
                 "program": "",
                 "env": {},
-                "args": ["ct60", "1", "dev"]     
+                "args": ["ct60", "4", "dev"]     
             }
         },
     {

@@ -1,1 +1,1 @@
-protoc -I helloworld/ helloworld/helloworld.proto --go_out=plugins=grpc:helloworld
+protoc --go_out=plugins=grpc:. simulator/simulator.proto
